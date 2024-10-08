@@ -1,10 +1,11 @@
-import 'package:baarazon_data/components/custom_modal_bottom_sheet.dart';
-// import 'package:baarazon_data/constants.dart';
-import 'package:baarazon_data/screens/home/home_screen.dart';
-import 'package:baarazon_data/screens/regions/regions_screen.dart';
+import 'package:animations/animations.dart';
+
+import 'package:baarazon_data/constants.dart';
+import 'package:baarazon_data/route/screen_exports.dart';
 
 import 'package:flutter/material.dart';
-// import 'package:animations/animations.dart';
+
+import 'components/custom_bottom_navigation/custom_bottom_navigation.dart';
 
 class EntryPoint extends StatefulWidget {
   const EntryPoint({super.key});
@@ -14,9 +15,14 @@ class EntryPoint extends StatefulWidget {
 }
 
 class _EntryPointState extends State<EntryPoint> {
-  // final List _pages = const [HomeScreen()];
+  final List _pages = const [
+    HomeScreen(),
+    ProvidersList(),
+    Placeholder(),
+    ProfileScreen()
+  ];
 
-  // final int _currentIndex = 0;
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,33 +51,44 @@ class _EntryPointState extends State<EntryPoint> {
           )
         ],
       ),
-      // body: PageTransitionSwitcher(
-      //   duration: defaultDuration,
-      //   child: _pages[_currentIndex],
-      //   transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-      //     return FadeThroughTransition(
-      //       animation: primaryAnimation,
-      //       secondaryAnimation: secondaryAnimation,
-      //       child: child,
-      //     );
-      //   },
-      // ),
-      body: const HomeScreen(),
-      floatingActionButton: FloatingActionButton.large(
-        shape: const CircleBorder(side: BorderSide.none),
-        elevation: 8,
-        onPressed: () {
-          customModalBottomSheet(
-            context,
-            isDismissible: true,
-            child: const Center(
-              child: RegionsScreen(),
-            ),
+      body: PageTransitionSwitcher(
+        duration: defaultDuration,
+        child: _pages[_currentIndex],
+        transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+          return FadeThroughTransition(
+            animation: primaryAnimation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
           );
         },
-        child: const Icon(Icons.location_on_outlined),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
+      bottomNavigationBar: CustomBtmNavigation(
+        onItemSelected: (index) {
+          if (_currentIndex != index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          }
+        },
+        selectedIndex: _currentIndex,
+      ),
+      // body: const HomeScreen(),
+      // floatingActionButton: FloatingActionButton.large(
+      //   shape: const CircleBorder(side: BorderSide.none),
+      //   elevation: 8,
+      //   onPressed: () {
+      //     customModalBottomSheet(
+      //       context,
+      //       isDismissible: true,
+      //       child: const Center(
+      //         child: RegionsScreen(),
+      //       ),
+      //     );
+      //   },
+      //   child: const Icon(Icons.location_on_outlined),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

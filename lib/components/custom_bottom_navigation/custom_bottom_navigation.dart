@@ -1,3 +1,4 @@
+import 'package:baarazon_data/screens/regions/regions_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../custom_modal_bottom_sheet.dart';
@@ -41,33 +42,33 @@ class CustomBtmNavigation extends StatelessWidget {
             context: context,
             text: "Profile"),
       ],
-      floatingNavItem: InkWell(
-        onTap: () {
-          customModalBottomSheet(
-            context,
-            isDismissible: true,
-            child: const Center(
-              child: Text('Hello World'),
-            ),
-          ); // Show bottom sheet when pressed
-        },
-        child: Container(
-          width: 70,
-          height: 70,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            border: Border.all(
-                color: Theme.of(context).secondaryHeaderColor, width: 2),
-            // Background color for the hovering button
+      floatingNavItem: Material(
+        borderRadius: BorderRadius.circular(40),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(40),
+          onTap: () {
+            customModalBottomSheet(context,
+                isDismissible: true,
+                child: const RegionsScreen()); // Show bottom sheet when pressed
+          },
+          child: Container(
+            width: 70,
+            height: 70,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).scaffoldBackgroundColor,
+              border: Border.all(
+                  color: Theme.of(context).secondaryHeaderColor, width: 2),
+              // Background color for the hovering button
 
-            boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.grey)],
-          ),
-          child: Icon(
-            Icons.location_on_outlined,
-            size: 40,
-            color: Colors.green[800],
+              boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.grey)],
+            ),
+            child: Icon(
+              Icons.location_on_outlined,
+              size: 40,
+              color: Colors.green[800],
+            ),
           ),
         ),
       ),

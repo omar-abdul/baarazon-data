@@ -1,11 +1,13 @@
+import 'package:baarazon_data/route/route_constants.dart';
+
 const double defaultPadding = 16.0;
 const double defaultBorderRadious = 12.0;
 const Duration defaultDuration = Duration(milliseconds: 300);
 const Map<String, List<String>> internetProviders = {
-  'Golis': ['assets/company_logo/golis.png', 'golisOptions'],
-  'Somtel': ['assets/company_logo/somtel.jpg', 'somtelOptions'],
-  'Amtel': ['assets/company_logo/amtelkom.png', 'amtelOptions'],
-  'Hormuud': ['assets/company_logo/hormuud.jpg', 'hormuudOptions'],
+  'Golis': ['assets/company_logo/golis.png', golisOptionsScreenRoute],
+  'Somtel': ['assets/company_logo/somtel.jpg', somtelOptionsScreenRoute],
+  'Amtel': ['assets/company_logo/amtelkom.png', amtelOptionsScreenRoute],
+  'Hormuud': ['assets/company_logo/hormuud.jpg', amtelOptionsScreenRoute],
 };
 
 enum Regions { puntland, somaliland, southSomalia }

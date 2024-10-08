@@ -1,3 +1,5 @@
+import 'package:baarazon_data/constants.dart';
+
 import 'option_export.dart';
 
 class Option {
@@ -54,19 +56,37 @@ extension PackageTypeExtension on PackageType {
   }
 }
 
-const Map<String, Set<PackageType>> providerPackageTypes = {
+const Map<String, Map<Regions, Set<PackageType>>> providerPackageTypes = {
   'Somtel': {
-    PackageType.prepaid,
-    PackageType.unlimitedData,
-    PackageType.daily,
-    PackageType.weekly,
-    PackageType.monthlyMudaysan,
-    PackageType.monthlyXadaysan,
-    PackageType.noExpiry,
+    Regions.puntland: {
+      PackageType.prepaid,
+      PackageType.unlimitedData,
+      PackageType.daily,
+      PackageType.weekly,
+      PackageType.monthlyMudaysan,
+      PackageType.monthlyXadaysan,
+    },
+    Regions.southSomalia: {
+      PackageType.prepaid,
+      PackageType.unlimitedData,
+      PackageType.daily,
+      PackageType.noExpiry,
+    },
+    Regions.somaliland: {
+      PackageType.unlimitedData,
+      PackageType.daily,
+      PackageType.noExpiry,
+    },
   },
   'Amtel': {
-    PackageType.tanaad,
-    PackageType.unlimitedData,
+    Regions.puntland: {
+      PackageType.tanaad,
+      PackageType.unlimitedData,
+    },
+    Regions.southSomalia: {
+      PackageType.tanaad,
+      PackageType.unlimitedData,
+    },
   }
 };
 
@@ -90,7 +110,7 @@ List<Option> generateSomtelOption(String region, PackageType type) {
           return [];
       }
 
-    case 'Muqdisho':
+    case 'South Somalia':
       switch (type) {
         case PackageType.prepaid:
           return muqdishoPrepaid;
@@ -104,7 +124,7 @@ List<Option> generateSomtelOption(String region, PackageType type) {
           return [];
       }
 
-    case 'Hargeisa':
+    case 'Somaliland':
       switch (type) {
         case PackageType.unlimitedData:
           return hargeisaUnlimitedDataPackage;
@@ -124,7 +144,7 @@ List<Option> generateSomtelOption(String region, PackageType type) {
 List<Option> generateAmtelOption(String region, PackageType type) {
   switch (region) {
     case 'Puntland':
-    case 'Muqdisho':
+    case 'South Somalia':
       switch (type) {
         case PackageType.tanaad:
           return amtelTanaadPackage;

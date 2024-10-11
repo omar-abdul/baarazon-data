@@ -27,15 +27,15 @@ class CustomBtmNavigation extends StatelessWidget {
                 Icons.signal_wifi_statusbar_null, 1),
             index: 1,
             context: context,
-            text: "Internet Data"),
+            text: "Internet"),
         const SizedBox(
           width: 70,
         ),
         _buildNavItem(
-            icon: Icons.shopping_cart_checkout_outlined,
+            icon: _fillOrOutline(Icons.call, Icons.call_outlined, 2),
             index: 2,
             context: context,
-            text: "Orders"),
+            text: "About"),
         _buildNavItem(
             icon: _fillOrOutline(Icons.person, Icons.person_outline, 3),
             index: 3,
@@ -103,10 +103,10 @@ class CustomBtmNavigation extends StatelessWidget {
               Text(
                 text,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      color: selectedIndex == index
-                          ? Theme.of(context).primaryColor
-                          : Colors.black38,
-                    ),
+                    color: selectedIndex == index
+                        ? Theme.of(context).primaryColor
+                        : Colors.black38,
+                    fontSize: 9),
               )
             ],
           ),

@@ -1,21 +1,38 @@
+import 'package:baarazon_data/language/cubit/language_cubit.dart';
 import 'package:baarazon_data/route/route_constants.dart';
 import 'package:baarazon_data/route/router.dart';
+import 'package:baarazon_data/screens/profile/cubit/cubit/phone_number_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './screens/regions/cubit.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final pref = await SharedPreferences.getInstance();
+  bool isFirstLaunch = pref.getBool('isFirstLaunch') ?? true;
+  runApp(MyApp(
+    isFirstLaunch: isFirstLaunch,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isFirstLaunch;
+  const MyApp({super.key, required this.isFirstLaunch});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => RegionCubit()..initialize(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => RegionCubit()..initialize(),
+        ),
+        BlocProvider(
+          create: (context) => LanguageCubit(),
+        ),
+        BlocProvider(create: (context) => PhoneNumberCubit())
+      ],
       child: MaterialApp(
         title: 'Baarazon Data & Exchange',
         theme: ThemeData(
@@ -23,7 +40,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         onGenerateRoute: generateRoute,
-        initialRoute: entryPointRoute,
+        initialRoute:
+            isFirstLaunch ? onBoardingScreenRoute : onBoardingScreenRoute,
       ),
     );
   }

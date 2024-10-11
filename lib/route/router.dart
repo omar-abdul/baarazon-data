@@ -1,3 +1,5 @@
+import 'package:baarazon_data/screens/login/login_screen.dart';
+import 'package:baarazon_data/screens/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'screen_exports.dart';
 
@@ -28,6 +30,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 
     case profileScreenRoute:
       return MaterialPageRoute(builder: (context) => const ProfileScreen());
+    case loginScreenRoute:
+      return MaterialPageRoute(builder: (context) => const LoginPage());
+    case onBoardingScreenRoute:
+      return MaterialPageRoute(builder: (context) => const OnBoardingScreen());
 
     default:
       return MaterialPageRoute(builder: (context) => const HomeScreen());

@@ -38,11 +38,10 @@ class _OrdersState extends State<Orders> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SliverPadding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+      sliver: SliverList(
+        delegate: SliverChildListDelegate([
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -54,28 +53,28 @@ class _OrdersState extends State<Orders> {
                     .copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
-                  onPressed: () async {
-                    await _refresh();
-                  },
-                  icon: const Icon(Icons.refresh)),
+                onPressed: () async {
+                  await _refresh();
+                },
+                icon: const Icon(Icons.refresh),
+              ),
             ],
           ),
           const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: orders.length,
-              itemBuilder: (context, index) => OrderCard(
-                title: orders[index].title,
-                amount: orders[index].amount,
-                isPending: orders[index].isPending,
-                description: orders[index].description,
-              ),
-            ),
-          ),
-        ],
+          ...orders.map((order) {
+            return OrderCard(
+              title: order.title,
+              amount: order.amount,
+              isPending: order.isPending,
+              description: order.description,
+            );
+          }),
+        ]),
       ),
     );
   }
 
-  Future<void> _refresh() async {}
+  Future<void> _refresh() async {
+    // Add refresh logic if necessary
+  }
 }

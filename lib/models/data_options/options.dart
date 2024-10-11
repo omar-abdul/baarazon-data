@@ -31,6 +31,7 @@ enum PackageType {
   monthlyXadaysan,
   tanaad,
   noExpiry,
+  none
 }
 
 extension PackageTypeExtension on PackageType {
@@ -52,6 +53,8 @@ extension PackageTypeExtension on PackageType {
         return 'Tanaad';
       case PackageType.noExpiry:
         return 'No Expiry';
+      case PackageType.none:
+        return 'None';
     }
   }
 }
@@ -155,5 +158,15 @@ List<Option> generateAmtelOption(String region, PackageType type) {
       }
     default:
       return [];
+  }
+}
+
+List<Option> generateOption(String provider, String region, PackageType type) {
+  if (provider == 'Somtel') {
+    return generateSomtelOption(region, type);
+  } else if (provider == 'Amtel') {
+    return generateAmtelOption(region, type);
+  } else {
+    return [];
   }
 }

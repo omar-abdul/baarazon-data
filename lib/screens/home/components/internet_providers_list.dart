@@ -1,4 +1,6 @@
+import 'package:baarazon_data/screens/regions/cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../constants.dart';
 
@@ -9,6 +11,11 @@ class InternetProvidersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final filteredProviders = internetProviderMap.entries
+        .where((entry) => entry.value.regions
+            .contains(context.watch<RegionCubit>().state.regionName))
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -31,15 +38,20 @@ class InternetProvidersList extends StatelessWidget {
               mainAxisSpacing: 16.0,
               childAspectRatio: 1, // Adjusted ratio for better look
             ),
-            itemCount: internetProviders.length,
+            itemCount: filteredProviders.length,
             itemBuilder: (context, index) {
-              final entry = internetProviders.entries.elementAt(index);
+              final entry = filteredProviders[index];
+              final InternetProvider provider = entry.value;
+
               return Material(
                 child: InkWell(
                   onTap: () {
                     // Handle the tap
-
-                    Navigator.pushNamed(context, entry.value[1]);
+                    if (!provider.isAvailable) {
+                      return;
+                    } else {
+                      Navigator.pushNamed(context, provider.route);
+                    }
                   },
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -63,7 +75,10 @@ class InternetProvidersList extends StatelessWidget {
                                 top: Radius.circular(12.0),
                               ),
                               child: Image.asset(
-                                entry.value[0],
+                                opacity: provider.isAvailable
+                                    ? const AlwaysStoppedAnimation(1)
+                                    : const AlwaysStoppedAnimation(.2),
+                                provider.logoPath,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
@@ -72,18 +87,22 @@ class InternetProvidersList extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            border: Border(
+                          decoration: BoxDecoration(
+                            color: provider.isAvailable
+                                ? Colors.white
+                                : Colors.transparent,
+                            border: const Border(
                                 top: BorderSide(color: Colors.grey, width: .3)),
-                            borderRadius: BorderRadius.vertical(
+                            borderRadius: const BorderRadius.vertical(
                               bottom: Radius.circular(12.0),
                             ),
                           ),
                           padding: const EdgeInsets.all(5.0),
                           child: Center(
                             child: Text(
-                              entry.key,
+                              provider.isAvailable
+                                  ? provider.name
+                                  : 'Coming soon',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall!

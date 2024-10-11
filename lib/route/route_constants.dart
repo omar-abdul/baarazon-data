@@ -8,3 +8,5 @@ const String hormuudOptionsScreenRoute = 'hormuudOptions';
 
 const String profileScreenRoute = 'profile';
 const String inputNumberScreenRoute = 'inputNumber';
+const String loginScreenRoute = 'login';
+const String onBoardingScreenRoute = 'onboarding';

@@ -39,20 +39,13 @@ class BannerMStyle1 extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Text(
-                "Shop now",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                width: 64,
-                child: Divider(
-                  color: Colors.white,
-                  thickness: 2,
-                ),
-              ),
+              // const SizedBox(
+              //   width: 64,
+              //   child: Divider(
+              //     color: Colors.white,
+              //     thickness: 2,
+              //   ),
+              // ),
               const Spacer(flex: 2),
             ],
           ),

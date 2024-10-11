@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 
 import 'package:baarazon_data/constants.dart';
 import 'package:baarazon_data/route/screen_exports.dart';
+import 'package:baarazon_data/screens/contact_us/contact_us_screen.dart';
 
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class _EntryPointState extends State<EntryPoint> {
   final List _pages = const [
     HomeScreen(),
     ProvidersList(),
-    Placeholder(),
+    ContactUsScreen(),
     ProfileScreen()
   ];
 
@@ -27,6 +28,7 @@ class _EntryPointState extends State<EntryPoint> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: const SizedBox(),
@@ -40,16 +42,7 @@ class _EntryPointState extends State<EntryPoint> {
             fit: BoxFit.contain,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.receipt_long),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.account_circle),
-          )
-        ],
+        actions: const [],
       ),
       body: PageTransitionSwitcher(
         duration: defaultDuration,

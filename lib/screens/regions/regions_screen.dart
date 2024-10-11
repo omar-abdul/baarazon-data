@@ -38,11 +38,11 @@ class RegionListItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const RegionListItem({
-    Key? key,
+    super.key,
     required this.region,
     required this.selected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +72,9 @@ class RegionListItem extends StatelessWidget {
                   color: selected ? Colors.white : Colors.black87,
                 ),
           ),
-          trailing:
-              selected ? Icon(Icons.check_circle, color: Colors.white) : null,
+          trailing: selected
+              ? const Icon(Icons.check_circle, color: Colors.white)
+              : null,
           onTap: onTap,
         ),
       ),

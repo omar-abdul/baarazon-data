@@ -23,13 +23,13 @@ class _OffersCarouselState extends State<OffersCarousel> {
   // Offers List
   List offers = [
     BannerMStyle1(
-      text: "New items with \nFree shipping",
+      text: "",
       press: () {},
       image:
           "https://mir-s3-cdn-cf.behance.net/project_modules/fs/d1fa2f93546277.5e67adbfa56c3.jpg",
     ),
     BannerMStyle1(
-      text: 'Hello',
+      text: '',
       press: () {},
       image:
           'https://thumbs.dreamstime.com/z/modern-banner-gadgets-sale-products-vector-illustration-business-poster-different-d-isometric-items-goods-laptop-161612046.jpg',

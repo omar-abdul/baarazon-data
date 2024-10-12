@@ -31,6 +31,7 @@ enum PackageType {
   monthlyXadaysan,
   tanaad,
   noExpiry,
+  monthly,
   none
 }
 
@@ -53,14 +54,17 @@ extension PackageTypeExtension on PackageType {
         return 'Tanaad';
       case PackageType.noExpiry:
         return 'No Expiry';
+      case PackageType.monthly:
+        return 'Monthly';
       case PackageType.none:
         return 'None';
     }
   }
 }
 
-const Map<String, Map<Regions, Set<PackageType>>> providerPackageTypes = {
-  'Somtel': {
+const Map<InternetProviders, Map<Regions, Set<PackageType>>>
+    providerPackageTypes = {
+  InternetProviders.somtel: {
     Regions.puntland: {
       PackageType.prepaid,
       PackageType.unlimitedData,
@@ -81,7 +85,7 @@ const Map<String, Map<Regions, Set<PackageType>>> providerPackageTypes = {
       PackageType.noExpiry,
     },
   },
-  'Amtel': {
+  InternetProviders.amtel: {
     Regions.puntland: {
       PackageType.tanaad,
       PackageType.unlimitedData,
@@ -90,12 +94,46 @@ const Map<String, Map<Regions, Set<PackageType>>> providerPackageTypes = {
       PackageType.tanaad,
       PackageType.unlimitedData,
     },
+  },
+  InternetProviders.golis: {
+    Regions.puntland: {
+      PackageType.prepaid,
+      PackageType.unlimitedData,
+      PackageType.daily,
+      PackageType.weekly,
+      PackageType.monthly,
+      PackageType.monthlyXadaysan,
+    }
   }
 };
 
-List<Option> generateSomtelOption(String region, PackageType type) {
+List<Option> generateGolisOption(Regions region, PackageType type) {
   switch (region) {
-    case 'Puntland':
+    case Regions.puntland:
+      switch (type) {
+        case PackageType.prepaid:
+          return golisPrepaid;
+        case PackageType.unlimitedData:
+          return golisUnlimitedData;
+        case PackageType.daily:
+          return golisDaily;
+        case PackageType.weekly:
+          return golisWeekly;
+        case PackageType.monthly:
+          return golisMonthly;
+        case PackageType.monthlyXadaysan:
+          return golisMonthlyXadaysan;
+        default:
+          return [];
+      }
+    default:
+      return [];
+  }
+}
+
+List<Option> generateSomtelOption(Regions region, PackageType type) {
+  switch (region) {
+    case Regions.puntland:
       switch (type) {
         case PackageType.prepaid:
           return puntlandPrepaid;
@@ -113,7 +151,7 @@ List<Option> generateSomtelOption(String region, PackageType type) {
           return [];
       }
 
-    case 'South Somalia':
+    case Regions.southSomalia:
       switch (type) {
         case PackageType.prepaid:
           return muqdishoPrepaid;
@@ -127,7 +165,7 @@ List<Option> generateSomtelOption(String region, PackageType type) {
           return [];
       }
 
-    case 'Somaliland':
+    case Regions.somaliland:
       switch (type) {
         case PackageType.unlimitedData:
           return hargeisaUnlimitedDataPackage;
@@ -144,10 +182,10 @@ List<Option> generateSomtelOption(String region, PackageType type) {
   }
 }
 
-List<Option> generateAmtelOption(String region, PackageType type) {
+List<Option> generateAmtelOption(Regions region, PackageType type) {
   switch (region) {
-    case 'Puntland':
-    case 'South Somalia':
+    case Regions.puntland:
+    case Regions.southSomalia:
       switch (type) {
         case PackageType.tanaad:
           return amtelTanaadPackage;
@@ -161,11 +199,14 @@ List<Option> generateAmtelOption(String region, PackageType type) {
   }
 }
 
-List<Option> generateOption(String provider, String region, PackageType type) {
-  if (provider == 'Somtel') {
+List<Option> generateOption(
+    InternetProviders provider, Regions region, PackageType type) {
+  if (provider == InternetProviders.somtel) {
     return generateSomtelOption(region, type);
-  } else if (provider == 'Amtel') {
+  } else if (provider == InternetProviders.amtel) {
     return generateAmtelOption(region, type);
+  } else if (provider == InternetProviders.golis) {
+    return generateGolisOption(region, type);
   } else {
     return [];
   }

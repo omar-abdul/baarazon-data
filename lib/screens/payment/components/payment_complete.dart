@@ -26,6 +26,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
   static const Map<String, String> providerLogoMap = {
     'amtel': 'assets/company_logo/amtel.png',
     'somtel': 'assets/company_logo/Somtel.png',
+    'golis': 'assets/company_logo/Golis.png'
   };
 
   @override

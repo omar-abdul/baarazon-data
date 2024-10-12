@@ -2,7 +2,7 @@ import 'package:baarazon_data/screens/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../constants.dart';
+import '../../../models/internet_providers/internet_providers_model.dart';
 
 class InternetProvidersList extends StatelessWidget {
   const InternetProvidersList({super.key});

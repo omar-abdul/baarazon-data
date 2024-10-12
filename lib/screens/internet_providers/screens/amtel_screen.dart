@@ -1,4 +1,5 @@
 import 'package:baarazon_data/components/Banner/banner_m_style1.dart';
+import 'package:baarazon_data/constants.dart';
 // import 'package:baarazon_data/components/custom_button.dart';
 import 'package:baarazon_data/screens/internet_providers/screens/components/options_list_card.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class AmtelScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
                 child: DataOptions(
-              provider: 'Amtel',
+              provider: InternetProviders.amtel,
             )),
           ],
         ),

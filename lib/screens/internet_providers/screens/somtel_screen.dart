@@ -1,4 +1,5 @@
 import 'package:baarazon_data/components/Banner/banner_m_style1.dart';
+import 'package:baarazon_data/constants.dart';
 import 'package:flutter/material.dart';
 import 'components/options_list_card.dart';
 
@@ -23,7 +24,7 @@ class SomtelScreen extends StatelessWidget {
           ),
           SliverToBoxAdapter(
               child: DataOptions(
-            provider: 'Somtel',
+            provider: InternetProviders.somtel,
           ))
         ],
       )),

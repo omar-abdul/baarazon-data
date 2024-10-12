@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../models/data_options/option_export.dart';
 
 class DataOptions extends StatefulWidget {
-  final String provider;
+  final InternetProviders provider;
 
   const DataOptions({super.key, required this.provider});
 
@@ -24,13 +24,13 @@ class _DataOptionsState extends State<DataOptions> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _packageSet = providerPackageTypes[widget.provider]
             ?[context.read<RegionCubit>().state.regionName] ??
         {};
     if (_packageSet.isNotEmpty) {
       _package = _packageSet.first;
     }
+
     super.initState();
   }
 
@@ -117,7 +117,7 @@ class _DataOptionsState extends State<DataOptions> {
         final regionEnum = state.regionName;
 
         final List<Option> options =
-            generateOption(widget.provider, regionEnum.displayName, _package);
+            generateOption(widget.provider, regionEnum, _package);
         return Column(
           children: [
             // Segmented Buttons

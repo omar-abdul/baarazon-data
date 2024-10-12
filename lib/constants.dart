@@ -1,18 +1,6 @@
-import 'package:baarazon_data/route/route_constants.dart';
-
 const double defaultPadding = 16.0;
 const double defaultBorderRadious = 12.0;
 const Duration defaultDuration = Duration(milliseconds: 300);
-// const Map<String, List<dynamic>> internetProviders = {
-//   'Golis ': ['assets/company_logo/golis.png', golisOptionsScreenRoute, false],
-//   'Somtel': ['assets/company_logo/somtel.jpg', somtelOptionsScreenRoute, true],
-//   'Amtel': ['assets/company_logo/amtelkom.png', amtelOptionsScreenRoute, true],
-//   'Hormuud': [
-//     'assets/company_logo/hormuud.jpg',
-//     amtelOptionsScreenRoute,
-//     false
-//   ],
-// };
 
 enum InternetProviders {
   golis,

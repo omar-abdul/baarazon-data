@@ -41,6 +41,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_launcher_icons: ^0.14.1
   fluttertoast: ^8.2.8
+  meta: ^1.15.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,5 @@
 import 'package:baarazon_data/models/payment_options/payment_options.dart';
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../../../models/data_options/options.dart';

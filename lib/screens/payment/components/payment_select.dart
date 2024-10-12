@@ -79,8 +79,9 @@ class PaymentCard extends StatelessWidget {
         onTap: () => onTap(option),
         borderRadius: const BorderRadius.all(Radius.circular(30)),
         child: Container(
-          padding: const EdgeInsets.all(
-              12.0), // Add padding to ensure content doesn't stick out
+          padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 0), // Add padding to ensure content doesn't stick out
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(30)),
             color: Theme.of(context).scaffoldBackgroundColor,
@@ -97,7 +98,7 @@ class PaymentCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(
-                    3), // Optional rounded corners for the image
+                    20), // Optional rounded corners for the image
                 child: SizedBox(
                   height: 65,
                   width: 65,
@@ -106,7 +107,7 @@ class PaymentCard extends StatelessWidget {
               ),
               const SizedBox(
                   width:
-                      16.0), // Keep a consistent space between image and text
+                      20.0), // Keep a consistent space between image and text
               Expanded(
                 child: Text(
                   title.toUpperCase(),

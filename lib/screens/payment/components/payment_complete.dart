@@ -1,7 +1,9 @@
+import 'package:baarazon_data/screens/internet_providers/screens/components/options_list_card.dart';
 import 'package:baarazon_data/screens/payment/bloc/cubit/payment_and_data_option_cubit.dart';
 import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../models/data_options/option_export.dart';
 import '../../../models/payment_options/payment_options.dart';
@@ -19,6 +21,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController1 = TextEditingController();
   final _phoneController2 = TextEditingController();
+  late FToast fToast;
 
   static const Map<String, String> providerLogoMap = {
     'amtel': 'assets/company_logo/amtel.png',
@@ -30,6 +33,40 @@ class PaymentCompleteState extends State<PaymentComplete> {
     _phoneController1.dispose();
     _phoneController2.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fToast = FToast();
+    fToast.init(context);
+  }
+
+  _showToast(String message) {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.greenAccent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check),
+          SizedBox(
+            width: 12.0,
+          ),
+          Text(message),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 4),
+    );
   }
 
   // Basic phone number validation (can be extended)
@@ -48,159 +85,104 @@ class PaymentCompleteState extends State<PaymentComplete> {
   Widget build(BuildContext context) {
     String fromUrl = widget.entry.value.imageUrl;
     String toUrl = providerLogoMap[widget.option.id.split('_')[0]]!;
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 40),
-                    decoration: const BoxDecoration(color: Colors.white),
-                    child: Text(widget.option.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Theme.of(context).primaryColor)),
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).primaryColor),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                DataOptionCard(option: widget.option, presentational: true),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                      child: Text(
+                    'Change Payment',
+                    style: Theme.of(context).textTheme.titleMedium!,
+                  )),
+                ),
+                PaymentCard(
+                    title: widget.entry.key.displayName,
+                    url: widget.entry.value.imageUrl,
+                    onTap: (option) {
+                      context.read<PaymentAndDataOptionCubit>().changePayment();
+                    },
+                    option: widget.option),
+                const SizedBox(
+                  height: 20,
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // First phone number input
+                      TextFormField(
+                        controller: _phoneController1,
+                        decoration: InputDecoration(
+                            labelText: 'Enter Sender Number',
+                            border: const OutlineInputBorder(),
+                            prefixIcon: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: SizedBox(
+                                  width: 20,
+                                  child: Image.asset(
+                                    fromUrl,
+                                    fit: BoxFit.contain,
+                                  )),
+                            )),
+                        keyboardType: TextInputType.phone,
+                        validator: _validatePhoneNumber,
+                      ),
+                      const SizedBox(height: 16.0),
+                      // Second phone number input
+                      TextFormField(
+                        controller: _phoneController2,
+                        decoration: InputDecoration(
+                            labelText: 'Enter Recharge Number',
+                            border: const OutlineInputBorder(),
+                            prefixIcon: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: SizedBox(
+                                  width: 20,
+                                  child: Image.asset(
+                                    toUrl,
+                                    fit: BoxFit.contain,
+                                  )),
+                            )),
+                        keyboardType: TextInputType.phone,
+                        validator: _validatePhoneNumber,
+                      ),
+                      const SizedBox(height: 20.0),
+                      // Submit Button
+                      Row(
                         children: [
-                          Text(
-                            widget.option.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${widget.option.currency == 'USD' ? '\$' : widget.option.currency}   ${widget.option.amount.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: FilledButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  // Process valid input
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //     const SnackBar(
+                                  //         content: Text('Processing Data')));
+                                  _showToast('Recharge Successful');
+                                }
+                              },
+                              child: const Text('Pay'),
                             ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      widget.option.duration,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Center(
-                child: Text(
-              'Change Payment',
-              style: Theme.of(context).textTheme.titleMedium!,
-            )),
-          ),
-          PaymentCard(
-              title: widget.entry.key.displayName,
-              url: widget.entry.value.imageUrl,
-              onTap: (option) {
-                context.read<PaymentAndDataOptionCubit>().changePayment();
-              },
-              option: widget.option),
-          const SizedBox(
-            height: 20,
-          ),
-          Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // First phone number input
-                TextFormField(
-                  controller: _phoneController1,
-                  decoration: InputDecoration(
-                      labelText: 'Enter Sender Number',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: SizedBox(
-                            width: 20,
-                            child: Image.asset(
-                              fromUrl,
-                              fit: BoxFit.contain,
-                            )),
-                      )),
-                  keyboardType: TextInputType.phone,
-                  validator: _validatePhoneNumber,
-                ),
-                const SizedBox(height: 16.0),
-                // Second phone number input
-                TextFormField(
-                  controller: _phoneController2,
-                  decoration: InputDecoration(
-                      labelText: 'Enter Recharge Number',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: SizedBox(
-                            width: 20,
-                            child: Image.asset(
-                              toUrl,
-                              fit: BoxFit.contain,
-                            )),
-                      )),
-                  keyboardType: TextInputType.phone,
-                  validator: _validatePhoneNumber,
-                ),
-                const SizedBox(height: 20.0),
-                // Submit Button
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // Process valid input
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Processing Data')));
-                          }
-                        },
-                        child: const Text('Pay'),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

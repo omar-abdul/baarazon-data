@@ -174,18 +174,22 @@ class DataOptionCard extends StatelessWidget {
   const DataOptionCard({
     super.key,
     required this.option,
+    this.presentational = false,
   });
 
   final Option option;
+  final bool presentational;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: InkWell(
-        onTap: () => customModalBottomSheet(context,
-            child: PaymentBottomSheet(
-              option: option,
-            )),
+        onTap: () => !presentational
+            ? customModalBottomSheet(context,
+                child: PaymentBottomSheet(
+                  option: option,
+                ))
+            : null,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
@@ -194,13 +198,11 @@ class DataOptionCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.0),
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: 95,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 20),
+                      horizontal: 10.0, vertical: 25),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -220,8 +222,8 @@ class DataOptionCard extends StatelessWidget {
                   child: Container(
                     decoration:
                         BoxDecoration(color: Theme.of(context).primaryColor),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -229,11 +231,11 @@ class DataOptionCard extends StatelessWidget {
                           option.name,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         Text(
                           '${option.currency == 'USD' ? '\$' : option.currency}   ${option.amount.toStringAsFixed(2)}',
                           style: const TextStyle(

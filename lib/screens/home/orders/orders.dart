@@ -24,16 +24,35 @@ class Orders extends StatefulWidget {
 class _OrdersState extends State<Orders> {
   final List<Order> orders = [
     Order(
-        title: 'First', amount: 10, isPending: true, description: 'Small text'),
-    Order(title: 'Second', amount: 10, isPending: false),
-    Order(title: 'Third', amount: 10, isPending: false),
-    Order(title: 'Fourth', amount: 10, isPending: false),
-    Order(title: 'Fifth', amount: 10, isPending: false),
+        title: 'Unlimited Data - 24/h',
+        amount: 0.99,
+        isPending: true,
+        description: '1 day unlimited data plan'),
     Order(
-      title: 'Sixth',
-      amount: 10,
-      isPending: false,
-    ),
+        title: 'Prepaid - Unlimited Calls - 3 Days',
+        amount: 0.22,
+        isPending: false,
+        description: 'Affordable prepaid call package for 3 days'),
+    Order(
+        title: 'Unlimited Data - 7 Days',
+        amount: 2.47,
+        isPending: false,
+        description: 'Weekly unlimited data plan'),
+    Order(
+        title: 'Weekly Internet - 1.5GB',
+        amount: 0.48,
+        isPending: false,
+        description: 'Weekly internet package with 1.5GB data'),
+    Order(
+        title: 'Monthly Internet - 25GB',
+        amount: 4.60,
+        isPending: true,
+        description: 'Monthly internet plan with 25GB data'),
+    Order(
+        title: 'Prepaid - Unlimited Calls - 30 Days',
+        amount: 4.45,
+        isPending: false,
+        description: 'Prepaid package for unlimited calls for 30 days'),
   ];
 
   @override

@@ -4,7 +4,6 @@ import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../database/sqlite_db.dart';
 import '../../../models/models.dart';
@@ -46,17 +45,6 @@ class PaymentCompleteState extends State<PaymentComplete> {
     fToast = FToast();
     fToast.init(context);
     _getProviderLogo();
-    // _getPhoneNumber();
-  }
-
-  _getPhoneNumber() async {
-    final pref = await SharedPreferences.getInstance();
-    phoneNumber = pref.getString('phoneNumber');
-    if (mounted) {
-      setState(() {
-        _phoneController1.value = TextEditingValue(text: phoneNumber!);
-      });
-    }
   }
 
   _getProviderLogo() async {

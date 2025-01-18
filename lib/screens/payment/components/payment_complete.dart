@@ -4,13 +4,15 @@ import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../models/data_options/option_export.dart';
-import '../../../models/payment_options/payment_options.dart';
+import '../../../database/sqlite_db.dart';
+import '../../../models/models.dart';
 
 class PaymentComplete extends StatefulWidget {
-  const PaymentComplete({super.key, required this.option, required this.entry});
-  final Option option;
+  const PaymentComplete(
+      {super.key, required this.service, required this.entry});
+  final ServiceModel service;
   final MapEntry<PaymentOptions, PaymentOption> entry;
 
   @override
@@ -22,12 +24,14 @@ class PaymentCompleteState extends State<PaymentComplete> {
   final _phoneController1 = TextEditingController();
   final _phoneController2 = TextEditingController();
   late FToast fToast;
+  String? providerLogo;
+  String? phoneNumber;
 
-  static const Map<String, String> providerLogoMap = {
-    'amtel': 'assets/company_logo/amtel.png',
-    'somtel': 'assets/company_logo/Somtel.png',
-    'golis': 'assets/company_logo/Golis.png'
-  };
+  // static const Map<String, String> providerLogoMap = {
+  //   'amtel': 'assets/company_logo/amtel.png',
+  //   'somtel': 'assets/company_logo/Somtel.png',
+  //   'golis': 'assets/company_logo/Golis.png'
+  // };
 
   @override
   void dispose() {
@@ -41,6 +45,31 @@ class PaymentCompleteState extends State<PaymentComplete> {
     super.initState();
     fToast = FToast();
     fToast.init(context);
+    _getProviderLogo();
+    // _getPhoneNumber();
+  }
+
+  _getPhoneNumber() async {
+    final pref = await SharedPreferences.getInstance();
+    phoneNumber = pref.getString('phoneNumber');
+    if (mounted) {
+      setState(() {
+        _phoneController1.value = TextEditingValue(text: phoneNumber!);
+      });
+    }
+  }
+
+  _getProviderLogo() async {
+    SqliteDb db = SqliteDb();
+    ProviderDbHelper providerDbHelper = ProviderDbHelper(db: db);
+    final provider =
+        await providerDbHelper.getProvider(widget.service.providerId);
+
+    if (mounted) {
+      setState(() {
+        providerLogo = provider?.imagePath;
+      });
+    }
   }
 
   _showToast(String message) {
@@ -73,18 +102,20 @@ class PaymentCompleteState extends State<PaymentComplete> {
 
   String? _validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a phone number';
+      return 'Fadlan geli lambar';
     }
     if (value.length != 10) {
-      return 'Enter a 10-digit phone number';
+      return 'Fadlan geli lambar dhamaystiran';
     }
+
+    print(value);
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     String fromUrl = widget.entry.value.imageUrl;
-    String toUrl = providerLogoMap[widget.option.id.split('_')[0]]!;
+    String? toUrl = providerLogo;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Padding(
@@ -93,7 +124,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
           child: Center(
             child: Column(
               children: [
-                DataOptionCard(option: widget.option, presentational: true),
+                DataOptionCard(service: widget.service, presentational: true),
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Center(
@@ -108,7 +139,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
                     onTap: (option) {
                       context.read<PaymentAndDataOptionCubit>().changePayment();
                     },
-                    option: widget.option),
+                    service: widget.service),
                 const SizedBox(
                   height: 20,
                 ),
@@ -143,16 +174,18 @@ class PaymentCompleteState extends State<PaymentComplete> {
                         decoration: InputDecoration(
                             labelText: 'Enter Recharge Number',
                             border: const OutlineInputBorder(),
-                            prefixIcon: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: SizedBox(
-                                  width: 20,
-                                  child: Image.asset(
-                                    toUrl,
-                                    fit: BoxFit.contain,
-                                  )),
-                            )),
+                            prefixIcon: providerLogo != null
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: SizedBox(
+                                        width: 20,
+                                        child: Image.asset(
+                                          toUrl!,
+                                          fit: BoxFit.contain,
+                                        )),
+                                  )
+                                : null),
                         keyboardType: TextInputType.phone,
                         validator: _validatePhoneNumber,
                       ),

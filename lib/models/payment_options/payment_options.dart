@@ -27,8 +27,6 @@ extension PaymentString on PaymentOptions {
         return 'MyCash Amtel';
       case PaymentOptions.cardDebitCredit:
         return 'Credit or Debit Card';
-      default:
-        return '';
     }
   }
 }

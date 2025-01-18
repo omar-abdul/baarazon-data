@@ -1,6 +1,7 @@
 import 'package:baarazon_data/screens/login/login_screen.dart';
 import 'package:baarazon_data/screens/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
+import '../models/models.dart';
 import 'screen_exports.dart';
 
 /// Returns a route based on [settings.name].
@@ -18,15 +19,15 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const EntryPoint());
     case homeScreenRoute:
       return MaterialPageRoute(builder: (context) => const HomeScreen());
-    case golisOptionsScreenRoute:
-      return MaterialPageRoute(builder: (context) => const GolisScreen());
-    case somtelOptionsScreenRoute:
-      return MaterialPageRoute(builder: (context) => const SomtelScreen());
+    // case golisOptionsScreenRoute:
+    //   return MaterialPageRoute(builder: (context) => const GolisScreen());
+    // case somtelOptionsScreenRoute:
+    //   return MaterialPageRoute(builder: (context) => const SomtelScreen());
 
     case hormuudOptionsScreenRoute:
       return MaterialPageRoute(builder: (context) => const HormuudScreen());
-    case amtelOptionsScreenRoute:
-      return MaterialPageRoute(builder: (context) => const AmtelScreen());
+    // case amtelOptionsScreenRoute:
+    //   return MaterialPageRoute(builder: (context) => const AmtelScreen());
 
     case profileScreenRoute:
       return MaterialPageRoute(builder: (context) => const ProfileScreen());
@@ -34,6 +35,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const LoginPage());
     case onBoardingScreenRoute:
       return MaterialPageRoute(builder: (context) => const OnBoardingScreen());
+    case servicesAndPlansScreenRoute:
+      final args = settings.arguments as Map<String, dynamic>;
+      return MaterialPageRoute(
+          builder: (context) =>
+              ServicesAndPlanScreen(provider: args['provider']));
 
     default:
       return MaterialPageRoute(builder: (context) => const HomeScreen());

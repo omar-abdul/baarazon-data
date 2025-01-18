@@ -176,9 +176,6 @@ List<Option> generateSomtelOption(Regions region, PackageType type) {
         default:
           return [];
       }
-
-    default:
-      return [];
   }
 }
 

@@ -1,37 +1,38 @@
 import 'package:baarazon_data/components/custom_modal_bottom_sheet.dart';
 import 'package:baarazon_data/constants.dart';
+import 'package:baarazon_data/models/services.dart';
 import 'package:baarazon_data/screens/payment/payment_screen.dart';
 import 'package:baarazon_data/screens/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../models/data_options/option_export.dart';
 
 class DataOptions extends StatefulWidget {
-  final InternetProviders provider;
-
-  const DataOptions({super.key, required this.provider});
+  final List<ServiceModel> services;
+  const DataOptions({super.key, required this.services});
 
   @override
   State<DataOptions> createState() => _DataOptionsState();
 }
 
 class _DataOptionsState extends State<DataOptions> {
-  Set<PackageType> _packageSet = {};
-  PackageType _package = PackageType.none;
+  Set<String> _packageSet = {};
+  String _package = '';
 
   final ScrollController _scrollController = ScrollController();
   final List<GlobalKey> _buttonKeys = [];
 
   @override
   void initState() {
-    _packageSet = providerPackageTypes[widget.provider]
-            ?[context.read<RegionCubit>().state.regionName] ??
-        {};
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _packageSet = widget.services.map((e) => e.type).toSet();
     if (_packageSet.isNotEmpty) {
       _package = _packageSet.first;
     }
-
-    super.initState();
   }
 
   @override
@@ -69,7 +70,7 @@ class _DataOptionsState extends State<DataOptions> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Text(
-              package.displayName,
+              package,
               style: TextStyle(
                 color: _package == package ? Colors.white : Colors.black,
               ),
@@ -116,8 +117,8 @@ class _DataOptionsState extends State<DataOptions> {
       builder: (context, state) {
         final regionEnum = state.regionName;
 
-        final List<Option> options =
-            generateOption(widget.provider, regionEnum, _package);
+        final List<ServiceModel> services =
+            widget.services.where((e) => e.type == _package).toList();
         return Column(
           children: [
             // Segmented Buttons
@@ -156,10 +157,10 @@ class _DataOptionsState extends State<DataOptions> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final option = options[index];
-                    return DataOptionCard(option: option);
+                    final service = services[index];
+                    return DataOptionCard(service: service);
                   },
-                  itemCount: options.length,
+                  itemCount: services.length,
                 ),
               ],
             ),
@@ -173,11 +174,11 @@ class _DataOptionsState extends State<DataOptions> {
 class DataOptionCard extends StatelessWidget {
   const DataOptionCard({
     super.key,
-    required this.option,
+    required this.service,
     this.presentational = false,
   });
 
-  final Option option;
+  final ServiceModel service;
   final bool presentational;
 
   @override
@@ -187,7 +188,7 @@ class DataOptionCard extends StatelessWidget {
         onTap: () => !presentational
             ? customModalBottomSheet(context,
                 child: PaymentBottomSheet(
-                  option: option,
+                  service: service,
                 ))
             : null,
         child: Padding(
@@ -211,7 +212,7 @@ class DataOptionCard extends StatelessWidget {
                     ),
                   ),
                   child: Center(
-                    child: Text(option.title,
+                    child: Text(service.type,
                         style: Theme.of(context)
                             .textTheme
                             .bodyLarge!
@@ -228,7 +229,15 @@ class DataOptionCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          option.name,
+                          service.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          service.description,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -237,7 +246,7 @@ class DataOptionCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${option.currency == 'USD' ? '\$' : option.currency}   ${option.amount.toStringAsFixed(2)}',
+                          '${service.advertisedPrice.toStringAsFixed(2)} USD',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -251,7 +260,7 @@ class DataOptionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    option.duration,
+                    '',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,

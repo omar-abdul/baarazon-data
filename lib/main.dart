@@ -7,11 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './screens/regions/cubit.dart';
+import 'cubits/connectivity/connectivity_cubit.dart';
+import 'services/background_sync_service.dart';
+import 'utils/seed_local_db.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final pref = await SharedPreferences.getInstance();
   bool isFirstLaunch = pref.getBool('isFirstLaunch') ?? true;
+
+  await BackgroundSyncService.initialize();
+  await BackgroundSyncService.registerPeriodicSync();
+
+  if (isFirstLaunch) {
+    await SeedLocalDb().seedAll();
+  }
+
   runApp(MyApp(
     isFirstLaunch: isFirstLaunch,
   ));
@@ -32,7 +43,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => LanguageCubit(),
         ),
-        BlocProvider(create: (context) => PhoneNumberCubit())
+        BlocProvider(create: (context) => PhoneNumberCubit()),
+        BlocProvider(create: (context) => ConnectivityCubit())
       ],
       child: MaterialApp(
         builder: FToastBuilder(),

@@ -24,8 +24,6 @@ extension RegionExtension on Regions {
         return 'Somaliland';
       case Regions.southSomalia:
         return 'South Somalia';
-      default:
-        return '';
     }
   }
 }
@@ -35,3 +33,5 @@ final Map<Regions, bool> regionEnabled = {
   Regions.somaliland: false,
   Regions.southSomalia: false
 };
+
+const API_URL = 'http://10.0.2.2:3000/api/v1/';

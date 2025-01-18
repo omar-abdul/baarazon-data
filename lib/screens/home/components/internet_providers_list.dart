@@ -1,20 +1,55 @@
+import 'package:baarazon_data/constants.dart';
+
+import 'package:baarazon_data/route/route_constants.dart';
 import 'package:baarazon_data/screens/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../models/internet_providers/internet_providers_model.dart';
+import '../../../database/sqlite_db.dart';
+import '../../../models/models.dart';
 
-class InternetProvidersList extends StatelessWidget {
+class InternetProvidersList extends StatefulWidget {
   const InternetProvidersList({super.key});
 
-  // Create a list of internet providers
+  @override
+  State<InternetProvidersList> createState() => _InternetProvidersListState();
+}
+
+class _InternetProvidersListState extends State<InternetProvidersList> {
+  List<ProviderModel> _providers = [];
 
   @override
+  void initState() {
+    super.initState();
+    // Remove async operations from here
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadProviders();
+  }
+
+  Future<void> _loadProviders() async {
+    final SqliteDb db = SqliteDb();
+    final ProviderDbHelper providerHelper = ProviderDbHelper(db: db);
+    final providers = await providerHelper.getAllByRegion(
+        context.read<RegionCubit>().state.regionName.displayName.toUpperCase());
+
+    if (mounted) {
+      setState(() {
+        _providers = providers;
+      });
+    }
+  }
+
+  // Create a list of internet providers
+  @override
   Widget build(BuildContext context) {
-    final filteredProviders = internetProviderMap.entries
-        .where((entry) => entry.value.regions
-            .contains(context.watch<RegionCubit>().state.regionName))
-        .toList();
+    // final filteredProviders = internetProviderMap.entries
+    //     .where((entry) => entry.value.regions
+    //         .contains(context.watch<RegionCubit>().state.regionName))
+    //     .toList();
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -38,19 +73,19 @@ class InternetProvidersList extends StatelessWidget {
               mainAxisSpacing: 16.0,
               childAspectRatio: 1, // Adjusted ratio for better look
             ),
-            itemCount: filteredProviders.length,
+            itemCount: _providers.length,
             itemBuilder: (context, index) {
-              final entry = filteredProviders[index];
-              final InternetProvider provider = entry.value;
+              final provider = _providers[index];
 
               return Material(
                 child: InkWell(
                   onTap: () {
                     // Handle the tap
-                    if (!provider.isAvailable) {
+                    if (!provider.available) {
                       return;
                     } else {
-                      Navigator.pushNamed(context, provider.route);
+                      Navigator.pushNamed(context, servicesAndPlansScreenRoute,
+                          arguments: {'provider': provider});
                     }
                   },
                   child: Card(
@@ -75,10 +110,10 @@ class InternetProvidersList extends StatelessWidget {
                                 top: Radius.circular(12.0),
                               ),
                               child: Image.asset(
-                                opacity: provider.isAvailable
+                                opacity: provider.available
                                     ? const AlwaysStoppedAnimation(1)
                                     : const AlwaysStoppedAnimation(.2),
-                                provider.logoPath,
+                                provider.imagePath,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
@@ -88,7 +123,7 @@ class InternetProvidersList extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            color: provider.isAvailable
+                            color: provider.available
                                 ? Colors.white
                                 : Colors.transparent,
                             border: const Border(
@@ -100,7 +135,7 @@ class InternetProvidersList extends StatelessWidget {
                           padding: const EdgeInsets.all(5.0),
                           child: Center(
                             child: Text(
-                              provider.isAvailable
+                              provider.available
                                   ? provider.name
                                   : 'Coming soon',
                               style: Theme.of(context)

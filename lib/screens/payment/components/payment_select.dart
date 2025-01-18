@@ -1,19 +1,20 @@
+import 'package:baarazon_data/models/services.dart';
 import 'package:baarazon_data/models/payment_options/payment_options.dart';
 import 'package:baarazon_data/screens/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../models/data_options/option_export.dart';
-
 class PaymentScreen extends StatelessWidget {
-  const PaymentScreen(
-      {super.key, required this.option, required this.onSelectPayment});
-  final Option option;
+  const PaymentScreen({
+    super.key,
+    required this.service,
+    required this.onSelectPayment,
+  });
 
+  final ServiceModel service;
   final void Function(
-      Option option,
-      MapEntry<PaymentOptions, PaymentOption> entry,
-      BuildContext context) onSelectPayment;
+          MapEntry<PaymentOptions, PaymentOption> entry, BuildContext context)
+      onSelectPayment;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,7 @@ class PaymentScreen extends StatelessWidget {
         .where((entry) => entry.value.region
             .contains(context.watch<RegionCubit>().state.regionName))
         .toList();
+
     return Column(
       children: [
         Padding(
@@ -43,10 +45,8 @@ class PaymentScreen extends StatelessWidget {
                 child: PaymentCard(
                   title: paymentOption.key.displayName,
                   url: paymentOption.value.imageUrl,
-                  option: option,
-                  onTap: (option) {
-                    onSelectPayment(option, paymentOption, context);
-                  },
+                  service: service,
+                  onTap: (_) => onSelectPayment(paymentOption, context),
                 ),
               );
             },
@@ -61,22 +61,22 @@ class PaymentScreen extends StatelessWidget {
 class PaymentCard extends StatelessWidget {
   final String title;
   final String url;
-  final Option option;
-  final void Function(Option option) onTap;
+  final ServiceModel service;
+  final void Function(ServiceModel service) onTap;
 
   const PaymentCard(
       {super.key,
       required this.title,
       required this.url,
       required this.onTap,
-      required this.option});
+      required this.service});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent, // To ensure the material effect works well
       child: InkWell(
-        onTap: () => onTap(option),
+        onTap: () => onTap(service),
         borderRadius: const BorderRadius.all(Radius.circular(30)),
         child: Container(
           padding: const EdgeInsets.symmetric(
@@ -87,7 +87,7 @@ class PaymentCard extends StatelessWidget {
             color: Theme.of(context).scaffoldBackgroundColor,
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).shadowColor.withOpacity(0.1),
+                color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                 spreadRadius: 5,
                 blurRadius: 7,
                 offset: const Offset(0, 3), // changes position of shadow

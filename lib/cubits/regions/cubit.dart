@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import './region_enum.dart';
+import 'region_enum.dart';
 import '../../constants.dart';
 
 class RegionState {

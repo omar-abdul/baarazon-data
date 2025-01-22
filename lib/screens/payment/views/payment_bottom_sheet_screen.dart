@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/services.dart';
-import '../bloc/cubit/payment_and_data_option_cubit.dart';
+import '../../../services/payment_service.dart';
+import '../cubit/payment_cubit.dart';
+import '../cubit/payment_and_data_option_cubit.dart';
 import '../components/payment_complete.dart';
 import '../components/payment_select.dart';
 
@@ -13,8 +15,11 @@ class PaymentBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PaymentAndDataOptionCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => PaymentAndDataOptionCubit()),
+        BlocProvider(create: (context) => PaymentCubit(PaymentService())),
+      ],
       child: BlocBuilder<PaymentAndDataOptionCubit, PaymentAndDataOptionState>(
         builder: (context, state) {
           final List<Widget> paymentPages = [

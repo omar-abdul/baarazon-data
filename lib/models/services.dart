@@ -23,7 +23,7 @@ class ServiceModel {
   final num advertisedPrice;
   final String description;
   final String type;
-  final String ussdCode;
+  final String currency;
 
   ServiceModel({
     this.id,
@@ -33,7 +33,7 @@ class ServiceModel {
     required this.advertisedPrice,
     required this.description,
     required this.type,
-    required this.ussdCode,
+    required this.currency,
   });
 
   // Create from database map
@@ -46,7 +46,7 @@ class ServiceModel {
       advertisedPrice: map['advertised_price'],
       description: map['description'] as String,
       type: map['type'] as String,
-      ussdCode: map['ussd_code'] as String,
+      currency: map['currency'] as String,
     );
   }
 
@@ -60,7 +60,7 @@ class ServiceModel {
       'advertised_price': advertisedPrice,
       'description': description,
       'type': type,
-      'ussd_code': ussdCode,
+      'currency': currency,
     };
   }
 
@@ -74,6 +74,7 @@ class ServiceModel {
     String? description,
     String? type,
     String? ussdCode,
+    String? currency,
   }) {
     return ServiceModel(
       id: id ?? this.id,
@@ -83,7 +84,7 @@ class ServiceModel {
       advertisedPrice: advertisedPrice ?? this.advertisedPrice,
       description: description ?? this.description,
       type: type ?? this.type,
-      ussdCode: ussdCode ?? this.ussdCode,
+      currency: currency ?? this.currency,
     );
   }
 
@@ -97,7 +98,7 @@ class ServiceModel {
         'advertisedPrice: $advertisedPrice, '
         'description: $description, '
         'type: $type, '
-        'ussdCode: $ussdCode'
+        'currency: $currency'
         ')';
   }
 }

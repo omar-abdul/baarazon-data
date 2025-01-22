@@ -1,14 +1,11 @@
 import 'package:animations/animations.dart';
-
-import 'package:baarazon_data/constants.dart';
-import 'package:baarazon_data/route/screen_exports.dart';
-import 'package:baarazon_data/screens/contact_us/contact_us_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'components/custom_bottom_navigation/custom_bottom_navigation.dart';
 import 'cubits/connectivity/connectivity_cubit.dart';
+import './constants.dart';
+import './route/screen_exports.dart';
 
 class EntryPoint extends StatefulWidget {
   const EntryPoint({super.key});

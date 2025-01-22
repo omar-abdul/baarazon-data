@@ -2,7 +2,7 @@ import 'package:baarazon_data/components/custom_modal_bottom_sheet.dart';
 import 'package:baarazon_data/constants.dart';
 import 'package:baarazon_data/models/services.dart';
 import 'package:baarazon_data/screens/payment/payment_screen.dart';
-import 'package:baarazon_data/screens/regions/cubit.dart';
+import 'package:baarazon_data/cubits/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -246,7 +246,7 @@ class DataOptionCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${service.advertisedPrice.toStringAsFixed(2)} USD',
+                          '${service.advertisedPrice.toStringAsFixed(2)} ${service.currency}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,

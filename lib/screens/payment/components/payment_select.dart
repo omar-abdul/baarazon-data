@@ -1,8 +1,9 @@
-import 'package:baarazon_data/models/services.dart';
-import 'package:baarazon_data/models/payment_options/payment_options.dart';
-import 'package:baarazon_data/screens/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../cubits/regions/cubit.dart';
+import '../../../models/payment_options/payment_options.dart';
+import '../../../models/services.dart';
 
 class PaymentScreen extends StatelessWidget {
   const PaymentScreen({

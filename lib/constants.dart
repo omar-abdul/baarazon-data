@@ -34,4 +34,5 @@ final Map<Regions, bool> regionEnabled = {
   Regions.southSomalia: false
 };
 
-const API_URL = 'http://10.0.2.2:3000/api/v1/';
+// const API_URL = 'http://10.0.2.2:3000/api/v1';
+const API_URL = 'http://192.168.194.109:5000/api/v1';

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 import '../../language/cubit/language_cubit.dart';
-import '../regions/cubit.dart';
+import '../../cubits/regions/cubit.dart';
 
 class OnBoardingScreen extends StatelessWidget {
   const OnBoardingScreen({super.key});

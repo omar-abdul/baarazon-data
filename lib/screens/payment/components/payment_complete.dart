@@ -1,5 +1,5 @@
-import 'package:baarazon_data/screens/internet_providers/screens/components/options_list_card.dart';
-import 'package:baarazon_data/screens/payment/bloc/cubit/payment_and_data_option_cubit.dart';
+import 'package:baarazon_data/components/options_list_card.dart';
+import 'package:baarazon_data/screens/payment/cubit/payment_and_data_option_cubit.dart';
 import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../database/sqlite_db.dart';
 import '../../../models/models.dart';
+import '../../../models/payment.dart';
+import '../cubit/payment_cubit.dart';
 
 class PaymentComplete extends StatefulWidget {
   const PaymentComplete(
@@ -84,6 +86,19 @@ class PaymentCompleteState extends State<PaymentComplete> {
       gravity: ToastGravity.BOTTOM,
       toastDuration: Duration(seconds: 4),
     );
+  }
+
+  _processPayment() {
+    context.read<PaymentCubit>().processPayment(PaymentRequest(
+          payFrom: _phoneController1.text,
+          payProvider: widget.entry.key.name,
+          topupTo: _phoneController2.text,
+          providerId: widget.service.providerId,
+          service: PaymentService(
+            id: widget.service.id!,
+            amount: widget.service.advertisedPrice.toDouble(),
+          ),
+        ));
   }
 
   // Basic phone number validation (can be extended)
@@ -183,15 +198,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
                         children: [
                           Expanded(
                             child: FilledButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // Process valid input
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //     const SnackBar(
-                                  //         content: Text('Processing Data')));
-                                  _showToast('Recharge Successful');
-                                }
-                              },
+                              onPressed: _processPayment,
                               child: const Text('Pay'),
                             ),
                           ),

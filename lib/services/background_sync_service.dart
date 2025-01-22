@@ -35,7 +35,7 @@ class BackgroundSyncService {
   static Future<void> initialize() async {
     await Workmanager().initialize(
       callbackDispatcher,
-      isInDebugMode: false, // Set to true for debugging
+      isInDebugMode: true, // Set to true for debugging
     );
   }
 
@@ -43,7 +43,7 @@ class BackgroundSyncService {
     await Workmanager().registerPeriodicTask(
       syncTaskName,
       syncTaskName,
-      frequency: const Duration(hours: 6), // Sync every 6 hours
+      // frequency: const Duration(hours: 6), // Sync every 6 hours
       constraints: Constraints(
         networkType: NetworkType.connected,
         requiresBatteryNotLow: true,

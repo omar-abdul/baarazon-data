@@ -1,10 +1,12 @@
-import 'package:baarazon_data/route/route_constants.dart';
-import 'package:baarazon_data/screens/profile/cubit/cubit/phone_number_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-import '../../entry_point.dart';
+import '../../cubits/auth/auth_cubit.dart';
+import '../../route/screen_exports.dart';
+import '../../services/auth_service.dart';
+import '../../services/preferences_service.dart';
+import '../profile/cubit/cubit/phone_number_cubit.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,92 +17,126 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController phoneNumberController = TextEditingController();
-  bool? numberExists;
+  String? phoneNumber;
+  String? token;
   final _formKey = GlobalKey<FormState>();
+  late FToast fToast;
+  final _authService = AuthService();
 
   @override
   void initState() {
     super.initState();
 
     _loadStoredValue();
+    fToast = FToast();
+  }
+
+  _showToast(String message, bool? error) {
+    fToast.showToast(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          decoration: BoxDecoration(
+              color: error == false ? Colors.green : Colors.red,
+              borderRadius: BorderRadius.circular(25.0)),
+          child: Text(message, style: const TextStyle(color: Colors.white)),
+        ),
+        toastDuration: const Duration(seconds: 2),
+        gravity: ToastGravity.BOTTOM);
   }
 
   Future<void> _loadStoredValue() async {
-    final prefs = await SharedPreferences.getInstance();
-    final storedValue = prefs.getString('phoneNumber');
+    final storedValue = await PreferencesService.getPhoneNumber();
+    final token = await PreferencesService.getToken();
     if (storedValue != null) {
       setState(() {
-        numberExists = true;
+        phoneNumber = storedValue;
+      });
+    }
+    if (token != null) {
+      setState(() {
+        this.token = token;
       });
     }
   }
 
-  // Add a form key to manage the form
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _authService.login(phoneNumberController.text);
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(entryPointRoute);
+        }
+      } catch (e) {
+        if (mounted) {
+          _showToast(e.toString(), true);
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (numberExists == true) {
-      return const EntryPoint();
-    }
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Form(
-              // Wrap with Form widget
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo
-                  Image.asset(
-                    'assets/images/logo.png', // Your logo image here
-                    height: 150,
-                  ),
-                  const SizedBox(height: 50),
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state.isAuthenticated) {
+          // Navigate to home screen or main app screen
+          Navigator.of(context).pushReplacementNamed(entryPointRoute);
+        }
+        if (state.error != null) {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error!)),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Form(
+                // Wrap with Form widget
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo
+                    Image.asset(
+                      'assets/images/logo.png', // Your logo image here
+                      height: 150,
+                    ),
+                    const SizedBox(height: 50),
 
-                  // Phone Number Input
-                  TextFormField(
-                    keyboardType: TextInputType.phone,
-                    controller: phoneNumberController,
-                    decoration: InputDecoration(
-                      labelText: 'Phone Number',
-                      prefixText: '+252 ', // Unchangeable prefix
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    // Phone Number Input
+                    TextFormField(
+                      keyboardType: TextInputType.phone,
+                      controller: phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Phone Number',
+                        prefixText: '+252 ', // Unchangeable prefix
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
+                      validator: _validatePhoneNumber, // Add validator here
                     ),
-                    validator: _validatePhoneNumber, // Add validator here
-                  ),
-                  const SizedBox(height: 30),
+                    const SizedBox(height: 30),
 
-                  // Login Button
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        final navigator = Navigator.of(context);
-                        final phoneNumberCubit =
-                            context.read<PhoneNumberCubit>();
-                        // If the form is valid, perform the login action
-                        final pref = await SharedPreferences.getInstance();
-
-                        await pref.setString(
-                            'phoneNumber', phoneNumberController.text);
-                        phoneNumberCubit
-                            .changePhoneNumber(phoneNumberController.text);
-                        navigator.pushReplacementNamed(entryPointRoute);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize:
-                          const Size(double.infinity, 50), // Full width
-                      backgroundColor: Colors.green, // Custom color for button
+                    // Login Button
+                    ElevatedButton(
+                      onPressed: _handleLogin,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize:
+                            const Size(double.infinity, 50), // Full width
+                        backgroundColor:
+                            Colors.green, // Custom color for button
+                      ),
+                      child: const Text('Login',
+                          style: TextStyle(fontSize: 18, color: Colors.white)),
                     ),
-                    child: const Text('Login',
-                        style: TextStyle(fontSize: 18, color: Colors.white)),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

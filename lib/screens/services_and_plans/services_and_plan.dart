@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../database/sqlite_db.dart';
-import '../../../models/models.dart';
-import 'components/options_list_card.dart';
+import '../../database/sqlite_db.dart';
+import '../../models/models.dart';
+import '../../components/options_list_card.dart';
 
 class ServicesAndPlanScreen extends StatefulWidget {
   final ProviderModel provider;

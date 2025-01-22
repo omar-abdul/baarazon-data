@@ -1,31 +1,48 @@
-import 'package:baarazon_data/language/cubit/language_cubit.dart';
-import 'package:baarazon_data/route/route_constants.dart';
-import 'package:baarazon_data/route/router.dart';
-import 'package:baarazon_data/screens/profile/cubit/cubit/phone_number_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import './screens/regions/cubit.dart';
+
+import 'cubits/regions/cubit.dart';
 import 'cubits/connectivity/connectivity_cubit.dart';
+import 'language/cubit/language_cubit.dart';
+import 'route/route_constants.dart';
+import 'route/router.dart';
+import 'screens/profile/cubit/cubit/phone_number_cubit.dart';
+import 'screens/update_required/update_required_screen.dart';
+import 'services/app_version_service.dart';
 import 'services/background_sync_service.dart';
-import 'utils/seed_local_db.dart';
+import 'database/seed_local_db.dart';
+import 'services/preferences_service.dart';
+import 'cubits/auth/auth_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final pref = await SharedPreferences.getInstance();
-  bool isFirstLaunch = pref.getBool('isFirstLaunch') ?? true;
 
+  // Initial check at startup
+  final appVersionService = AppVersionService();
+  final versionCheck = await appVersionService.checkVersion();
+
+  if (versionCheck.needsUpdate && versionCheck.forceUpdate) {
+    runApp(MaterialApp(
+      home: UpdateRequiredScreen(
+        appVersion: versionCheck.appVersion!,
+        forceUpdate: true,
+      ),
+    ));
+    return;
+  }
+
+  // Use the service instead
+  final isFirstLaunch = await PreferencesService.isFirstLaunch();
   await BackgroundSyncService.initialize();
   await BackgroundSyncService.registerPeriodicSync();
 
   if (isFirstLaunch) {
     await SeedLocalDb().seedAll();
+    await PreferencesService.setFirstLaunch(false);
   }
 
-  runApp(MyApp(
-    isFirstLaunch: isFirstLaunch,
-  ));
+  runApp(MyApp(isFirstLaunch: isFirstLaunch));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,7 +61,10 @@ class MyApp extends StatelessWidget {
           create: (context) => LanguageCubit(),
         ),
         BlocProvider(create: (context) => PhoneNumberCubit()),
-        BlocProvider(create: (context) => ConnectivityCubit())
+        BlocProvider(create: (context) => ConnectivityCubit()),
+        BlocProvider(
+          create: (context) => AuthCubit(),
+        ),
       ],
       child: MaterialApp(
         builder: FToastBuilder(),

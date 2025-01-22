@@ -1,4 +1,4 @@
-import 'package:baarazon_data/screens/home/components/internet_providers_list.dart';
+import 'package:baarazon_data/screens/internet_providers/internet_providers_list.dart';
 import 'package:flutter/material.dart';
 
 class ProvidersList extends StatelessWidget {

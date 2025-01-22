@@ -1,6 +1,6 @@
 import 'package:baarazon_data/constants.dart';
 import 'package:baarazon_data/screens/profile/cubit/cubit/phone_number_cubit.dart';
-import 'package:baarazon_data/screens/regions/cubit.dart';
+import 'package:baarazon_data/cubits/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';

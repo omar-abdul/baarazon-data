@@ -29,7 +29,6 @@ class SqliteDb {
           CREATE TABLE providers (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
-            percentage_profit DECIMAL(5,2) NOT NULL,
             available INTEGER NOT NULL DEFAULT 0,
             image_path TEXT NOT NULL,
             display_name TEXT NOT NULL,
@@ -47,7 +46,7 @@ class SqliteDb {
             advertised_price DECIMAL(10,2) NOT NULL,
             description TEXT NOT NULL,
             type TEXT NOT NULL,
-            ussd_code TEXT NOT NULL,
+            currency TEXT NOT NULL,
             FOREIGN KEY (provider_id) REFERENCES providers (id) ON DELETE CASCADE
           )
         ''');

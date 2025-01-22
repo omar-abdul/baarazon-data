@@ -1,7 +1,7 @@
-import 'package:baarazon_data/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import './cubit.dart';
+import '../../constants.dart';
+import '../../cubits/regions/cubit.dart';
 
 class RegionsScreen extends StatelessWidget {
   const RegionsScreen({super.key});

@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:baarazon_data/constants.dart';
+import 'package:baarazon_data/logger.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 
 import '../database/sqlite_db.dart';
+import 'http_service.dart';
 
 class SyncService {
   final SqliteDb localDb;
+  final _http = HttpService();
 
   SyncService({required this.localDb});
 
@@ -19,19 +22,23 @@ class SyncService {
   Future<void> syncProviders() async {
     try {
       final db = await localDb.database;
-      // Get last sync timestamp for providers
       final lastSync = await localDb.getLastSync('providers');
 
-      // Fetch only updated records from Supabase
-      final response = await http
-          .get(Uri.parse('$API_URL/get_all_providers?lastSync=$lastSync'));
+      final response =
+          await _http.get<Map<String, dynamic>, Map<String, dynamic>>(
+        lastSync != null
+            ? '/get_all_providers?lastSync=$lastSync'
+            : '/get_all_providers',
+        acceptedCodes: {200, 204},
+      );
 
-      final Map<String, dynamic> responseJson = jsonDecode(response.body);
-      final List<dynamic> providers = responseJson['data'];
+      final List<dynamic> providers = response['data'] ?? [];
 
-      // Begin transaction
       await db.transaction((txn) async {
         for (var provider in providers) {
+          provider['available'] = provider['available'] == true ? 1 : 0;
+          provider['show_in_app'] = provider['show_in_app'] == true ? 1 : 0;
+          logger.d({provider});
           await txn.insert(
             'providers',
             provider,
@@ -40,10 +47,9 @@ class SyncService {
         }
       });
 
-      // Update sync timestamp
       await localDb.updateLastSync('providers');
     } catch (e) {
-      print('Error syncing providers: $e');
+      logger.e('Error syncing providers: $e');
       rethrow;
     }
   }
@@ -53,11 +59,14 @@ class SyncService {
       final db = await localDb.database;
       final lastSync = await localDb.getLastSync('services');
 
-      final response = await http
-          .get(Uri.parse('$API_URL/get_all_services?lastSync=$lastSync'));
+      final response =
+          await _http.get<Map<String, dynamic>, Map<String, dynamic>>(
+        '/get_all_services',
+        headers: lastSync != null ? {'Last-Sync': lastSync} : null,
+        acceptedCodes: {200, 204},
+      );
 
-      final Map<String, dynamic> responseJson = jsonDecode(response.body);
-      final List<dynamic> services = responseJson['data'];
+      final List<dynamic> services = response['data'] ?? [];
 
       await db.transaction((txn) async {
         for (var service in services) {
@@ -71,7 +80,7 @@ class SyncService {
 
       await localDb.updateLastSync('services');
     } catch (e) {
-      print('Error syncing services: $e');
+      logger.e('Error syncing services: $e');
       rethrow;
     }
   }

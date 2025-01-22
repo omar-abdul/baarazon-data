@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 class OrderCard extends StatelessWidget {
   const OrderCard({
     super.key,
-    required this.title,
+    required this.name,
     required this.amount,
-    required this.isPending,
+    required this.status,
     this.description,
   });
 
-  final String title;
+  final String name;
   final String? description; // Optional description text
   final double amount;
-  final bool isPending;
+  final String status;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class OrderCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                name,
                 style: Theme.of(context)
                     .textTheme
                     .headlineSmall!
@@ -44,11 +44,13 @@ class OrderCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 decoration: BoxDecoration(
-                  color: isPending ? Colors.red[800] : Colors.green[800],
+                  color: status.toLowerCase() == 'pending'
+                      ? Colors.red[800]
+                      : Colors.green[800],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  isPending ? 'Pending' : 'Completed',
+                  status.toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,

@@ -29,7 +29,6 @@ class ProviderDbHelper {
 class ProviderModel {
   final int? id; // nullable for new records
   final String name;
-  final num percentageProfit;
   final bool available;
   final String imagePath;
   final String displayName;
@@ -39,7 +38,6 @@ class ProviderModel {
   ProviderModel({
     this.id,
     required this.name,
-    required this.percentageProfit,
     required this.available,
     this.imagePath = '/assets/company_logo/placeholder.png',
     required this.displayName,
@@ -52,7 +50,6 @@ class ProviderModel {
     return ProviderModel(
       id: map['id'] as int,
       name: map['name'] as String,
-      percentageProfit: map['percentage_profit'],
       available: map['available'] == 1,
       imagePath: map['image_path'] as String,
       displayName: map['display_name'] as String,
@@ -66,7 +63,6 @@ class ProviderModel {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'percentage_profit': percentageProfit,
       'available': available ? 1 : 0,
       'image_path': imagePath,
       'display_name': displayName,
@@ -79,7 +75,6 @@ class ProviderModel {
   ProviderModel copyWith({
     int? id,
     String? name,
-    num? percentageProfit,
     bool? available,
     String? imagePath,
     String? displayName,
@@ -89,7 +84,6 @@ class ProviderModel {
     return ProviderModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      percentageProfit: percentageProfit ?? this.percentageProfit,
       available: available ?? this.available,
       imagePath: imagePath ?? this.imagePath,
       displayName: displayName ?? this.displayName,

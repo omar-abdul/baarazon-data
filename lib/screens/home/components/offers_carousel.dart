@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:baarazon_data/components/Banner/banner_m_style1.dart';
 import 'package:baarazon_data/components/dot_indicators.dart';
 import 'package:baarazon_data/components/skeleton.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -27,21 +27,6 @@ class _OffersCarouselState extends State<OffersCarousel> {
   late PageController _pageController;
   Timer? _timer;
 
-  // Offers List
-  // List offers = [
-  //   BannerMStyle1(
-  //     text: "",
-  //     press: () {},
-  //     image:
-  //         "https://mir-s3-cdn-cf.behance.net/project_modules/fs/d1fa2f93546277.5e67adbfa56c3.jpg",
-  //   ),
-  //   BannerMStyle1(
-  //     text: '',
-  //     press: () {},
-  //     image:
-  //         'https://thumbs.dreamstime.com/z/modern-banner-gadgets-sale-products-vector-illustration-business-poster-different-d-isometric-items-goods-laptop-161612046.jpg',
-  //   ),
-  // ];
   List _images = [];
 
   @override

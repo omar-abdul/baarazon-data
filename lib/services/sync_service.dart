@@ -1,11 +1,7 @@
-import 'dart:convert';
-
-import 'package:baarazon_data/constants.dart';
-import 'package:baarazon_data/logger.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:http/http.dart' as http;
 
 import '../database/sqlite_db.dart';
+import '../logger.dart';
 import 'http_service.dart';
 
 class SyncService {
@@ -38,7 +34,6 @@ class SyncService {
         for (var provider in providers) {
           provider['available'] = provider['available'] == true ? 1 : 0;
           provider['show_in_app'] = provider['show_in_app'] == true ? 1 : 0;
-          logger.d({provider});
           await txn.insert(
             'providers',
             provider,

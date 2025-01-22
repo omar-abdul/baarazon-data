@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/preferences_service.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -27,16 +29,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _intialize() async {
-    final prefs = await SharedPreferences.getInstance();
-    final phoneNumber = prefs.getString('phoneNumber');
+    final phoneNumber = await PreferencesService.getPhoneNumber();
     if (phoneNumber != null) {
       _numberController.text = phoneNumber;
     }
   }
 
   Future<void> setPhoneNumber(String phoneNumber) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('phoneNumber', phoneNumber);
+    await PreferencesService.setPhoneNumber(phoneNumber);
   }
 
   @override

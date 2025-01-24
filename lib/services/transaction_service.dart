@@ -1,4 +1,3 @@
-import '../logger.dart';
 import '../models/transaction.dart';
 import '../services/preferences_service.dart';
 import 'http_service.dart';
@@ -11,7 +10,7 @@ class TransactionService {
     if (token == null) throw Exception('Not authenticated');
 
     final response = await _http.get<List<Transaction>, Map<String, dynamic>>(
-      '/my_transactions',
+      '/my-transactions',
       headers: {
         'Authorization': 'Bearer $token',
       },

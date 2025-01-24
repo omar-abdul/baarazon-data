@@ -1,37 +1,48 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../logger.dart';
 import '../../services/preferences_service.dart';
+import '../../services/auth_service.dart';
+
+enum AuthStatus {
+  initial,
+  loading,
+  authenticated,
+  error,
+}
 
 // Auth State
 class AuthState extends Equatable {
   final String? token;
-  final bool isAuthenticated;
+  final AuthStatus status;
   final String? error;
 
   const AuthState({
     this.token,
-    this.isAuthenticated = false,
+    this.status = AuthStatus.initial,
     this.error,
   });
 
   AuthState copyWith({
     String? token,
-    bool? isAuthenticated,
+    AuthStatus? status,
     String? error,
   }) {
     return AuthState(
       token: token ?? this.token,
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      status: status ?? this.status,
       error: error ?? this.error,
     );
   }
 
   @override
-  List<Object?> get props => [token, isAuthenticated, error];
+  List<Object?> get props => [token, status, error];
 }
 
 // Auth Cubit
 class AuthCubit extends Cubit<AuthState> {
+  final _authService = AuthService();
+
   AuthCubit() : super(const AuthState()) {
     _initializeAuth();
   }
@@ -39,26 +50,31 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> _initializeAuth() async {
     final token = await PreferencesService.getToken();
     if (token != null) {
-      emit(state.copyWith(token: token, isAuthenticated: true));
+      emit(state.copyWith(token: token, status: AuthStatus.authenticated));
     }
   }
 
-  Future<void> login(String token) async {
+  Future<void> loginWithPhone(String phoneNumber) async {
     try {
-      await PreferencesService.setToken(token);
+      logger.d('loginWithPhone: $phoneNumber');
+      emit(state.copyWith(status: AuthStatus.loading));
+      final token = await _authService.login(phoneNumber);
       emit(state.copyWith(
         token: token,
-        isAuthenticated: true,
+        status: AuthStatus.authenticated,
         error: null,
       ));
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(
+        status: AuthStatus.error,
+        error: e.toString(),
+      ));
     }
   }
 
   Future<void> logout() async {
     try {
-      await PreferencesService.removeToken();
+      await _authService.logout();
       emit(const AuthState());
     } catch (e) {
       emit(state.copyWith(error: e.toString()));

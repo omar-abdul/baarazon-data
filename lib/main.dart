@@ -10,7 +10,6 @@ import 'route/router.dart';
 import 'screens/profile/cubit/cubit/phone_number_cubit.dart';
 import 'screens/update_required/update_required_screen.dart';
 import 'services/app_version_service.dart';
-import 'services/background_sync_service.dart';
 import 'database/seed_local_db.dart';
 import 'services/preferences_service.dart';
 import 'cubits/auth/auth_cubit.dart';
@@ -34,8 +33,6 @@ void main() async {
 
   // Use the service instead
   final isFirstLaunch = await PreferencesService.isFirstLaunch();
-  await BackgroundSyncService.initialize();
-  await BackgroundSyncService.registerPeriodicSync();
 
   if (isFirstLaunch) {
     await SeedLocalDb().seedAll();

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../logger.dart';
 import '../services/http_service.dart';
 import '../services/preferences_service.dart';
 
@@ -7,6 +8,7 @@ class AuthService {
   final _http = HttpService();
 
   Future<String> login(String phoneNumber) async {
+    logger.d('login: $phoneNumber');
     final response =
         await _http.post<Map<String, dynamic>, Map<String, dynamic>>(
       '/signup-signin',
@@ -16,6 +18,7 @@ class AuthService {
 
     final token = response['token'];
     await PreferencesService.setToken(token);
+    await PreferencesService.setPhoneNumber(phoneNumber);
     return token;
   }
 

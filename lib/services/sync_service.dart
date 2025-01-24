@@ -22,9 +22,7 @@ class SyncService {
 
       final response =
           await _http.get<Map<String, dynamic>, Map<String, dynamic>>(
-        lastSync != null
-            ? '/get_all_providers?lastSync=$lastSync'
-            : '/get_all_providers',
+        lastSync != null ? '/providers?lastSync=$lastSync' : '/providers',
         acceptedCodes: {200, 204},
       );
 
@@ -56,8 +54,7 @@ class SyncService {
 
       final response =
           await _http.get<Map<String, dynamic>, Map<String, dynamic>>(
-        '/get_all_services',
-        headers: lastSync != null ? {'Last-Sync': lastSync} : null,
+        lastSync != null ? '/services?lastSync=$lastSync' : '/services',
         acceptedCodes: {200, 204},
       );
 

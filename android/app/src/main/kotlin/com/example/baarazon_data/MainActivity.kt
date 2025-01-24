@@ -1,4 +1,4 @@
-package com.example.baarazon_data
+package com.baarazondata.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../components/phone_number.dart';
 import '../../cubits/auth/auth_cubit.dart';
+import '../../logger.dart';
 import '../../route/screen_exports.dart';
-import '../../services/auth_service.dart';
 import '../../services/preferences_service.dart';
-import '../profile/cubit/cubit/phone_number_cubit.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,27 +22,44 @@ class _LoginPageState extends State<LoginPage> {
   String? token;
   final _formKey = GlobalKey<FormState>();
   late FToast fToast;
-  final _authService = AuthService();
+  bool loading = false;
+  CountryWithPhoneCode? _country;
 
   @override
   void initState() {
     super.initState();
 
     _loadStoredValue();
+    _initializeCountry();
     fToast = FToast();
+    // Initialize fToast with context in the next frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fToast.init(context);
+    });
+  }
+
+  Future<void> _initializeCountry() async {
+    final regions = await getAllSupportedRegions();
+    final region = regions['SO']!;
+    setState(() {
+      _country = region;
+    });
   }
 
   _showToast(String message, bool? error) {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+          color: error == false ? Colors.green : Colors.red,
+          borderRadius: BorderRadius.circular(25.0)),
+      child: Text(message, style: const TextStyle(color: Colors.white)),
+    );
+
     fToast.showToast(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          decoration: BoxDecoration(
-              color: error == false ? Colors.green : Colors.red,
-              borderRadius: BorderRadius.circular(25.0)),
-          child: Text(message, style: const TextStyle(color: Colors.white)),
-        ),
-        toastDuration: const Duration(seconds: 2),
-        gravity: ToastGravity.BOTTOM);
+      child: toast,
+      toastDuration: const Duration(seconds: 2),
+      gravity: ToastGravity.BOTTOM,
+    );
   }
 
   Future<void> _loadStoredValue() async {
@@ -60,33 +78,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _authService.login(phoneNumberController.text);
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed(entryPointRoute);
-        }
-      } catch (e) {
-        if (mounted) {
-          _showToast(e.toString(), true);
-        }
-      }
-    }
+    setState(() {
+      loading = true;
+    });
+    context.read<AuthCubit>().loginWithPhone(phoneNumberController.text);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.isAuthenticated) {
-          // Navigate to home screen or main app screen
+        if (state.status == AuthStatus.authenticated) {
           Navigator.of(context).pushReplacementNamed(entryPointRoute);
+          setState(() {
+            loading = false;
+          });
         }
-        if (state.error != null) {
-          // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error!)),
-          );
+        if (state.status == AuthStatus.error) {
+          logger.e(state.error);
+          _showToast('An unknown error occurred', true);
+          setState(() {
+            loading = false;
+          });
         }
       },
       child: Scaffold(
@@ -108,32 +121,30 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 50),
 
-                    // Phone Number Input
-                    TextFormField(
-                      keyboardType: TextInputType.phone,
-                      controller: phoneNumberController,
-                      decoration: InputDecoration(
-                        labelText: 'Phone Number',
-                        prefixText: '+252 ', // Unchangeable prefix
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      validator: _validatePhoneNumber, // Add validator here
-                    ),
+                    _country != null
+                        ? PhoneNumber(
+                            country: _country!,
+                            controller: phoneNumberController,
+                            onPhoneNumberChanged: (value) {},
+                            initialValue: phoneNumber,
+                          )
+                        : const CircularProgressIndicator(),
                     const SizedBox(height: 30),
 
                     // Login Button
                     ElevatedButton(
-                      onPressed: _handleLogin,
+                      onPressed: loading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
                         minimumSize:
                             const Size(double.infinity, 50), // Full width
                         backgroundColor:
                             Colors.green, // Custom color for button
                       ),
-                      child: const Text('Login',
-                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                      child: loading
+                          ? CircularProgressIndicator()
+                          : const Text('Login',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white)),
                     ),
                   ],
                 ),
@@ -143,17 +154,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  // Validation logic for phone number
-  String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a phone number';
-    }
-    if (value.length != 9) {
-      // Phone numbers without country code should be 9 digits for Somalia
-      return 'Enter a 9-digit phone number';
-    }
-    return null;
   }
 }

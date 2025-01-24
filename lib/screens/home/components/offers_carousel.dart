@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:baarazon_data/components/Banner/banner_m_style1.dart';
 import 'package:baarazon_data/components/dot_indicators.dart';
@@ -7,11 +6,11 @@ import 'package:baarazon_data/components/skeleton.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../../constants.dart';
 import '../../../cubits/connectivity/connectivity_cubit.dart';
 import '../../../logger.dart';
+import '../../../services/http_service.dart';
 
 class OffersCarousel extends StatefulWidget {
   const OffersCarousel({
@@ -51,14 +50,9 @@ class _OffersCarouselState extends State<OffersCarousel> {
       if (!hasInternet) {
         return;
       }
-      final response = await http.get(Uri.parse('$API_URL/get_slider_images'));
+      final response = await HttpService().get('/slider-images');
 
-      if (response.statusCode != 200) {
-        logger.e('API Error: ${response.statusCode}');
-        return;
-      }
-
-      var images = jsonDecode(response.body);
+      var images = response;
       logger.i('Received images: $images'); // Debug print
 
       if (mounted) {

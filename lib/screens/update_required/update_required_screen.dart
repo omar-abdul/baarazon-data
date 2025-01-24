@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -60,7 +62,22 @@ class UpdateRequiredScreen extends StatelessWidget {
                 ],
                 const SizedBox(height: 32),
                 ElevatedButton(
-                  onPressed: () => _launchStore(appVersion.appLinks.storeUrl),
+                  onPressed: () {
+                    var url = '';
+                    if (Platform.isAndroid) {
+                      url = appVersion.appLinks
+                          .where((link) => link.platform == 'android')
+                          .first
+                          .storeUrl;
+                    } else if (Platform.isIOS) {
+                      url = appVersion.appLinks
+                          .where((link) => link.platform == 'ios')
+                          .first
+                          .storeUrl;
+                    }
+
+                    _launchStore(url);
+                  },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(200, 45),
                     shape: RoundedRectangleBorder(

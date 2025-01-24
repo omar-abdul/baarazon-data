@@ -1,4 +1,5 @@
 import 'package:baarazon_data/components/options_list_card.dart';
+import 'package:baarazon_data/logger.dart';
 import 'package:baarazon_data/screens/payment/cubit/payment_and_data_option_cubit.dart';
 import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
@@ -62,17 +63,17 @@ class PaymentCompleteState extends State<PaymentComplete> {
     }
   }
 
-  _showToast(String message) {
+  _showToast(String message, {bool isError = false}) {
     Widget toast = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Colors.greenAccent,
+        color: isError ? Colors.redAccent : Colors.greenAccent,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check),
+          Icon(isError ? Icons.error : Icons.check),
           SizedBox(
             width: 12.0,
           ),
@@ -99,6 +100,13 @@ class PaymentCompleteState extends State<PaymentComplete> {
             amount: widget.service.advertisedPrice.toDouble(),
           ),
         ));
+
+    if (context.read<PaymentCubit>().state.status == PaymentStatus.success) {
+      _showToast('Payment successful');
+    }
+    if (context.read<PaymentCubit>().state.status == PaymentStatus.failure) {
+      _showToast('Payment failed', isError: true);
+    }
   }
 
   // Basic phone number validation (can be extended)
@@ -111,7 +119,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
       return 'Fadlan geli lambar dhamaystiran';
     }
 
-    print(value);
+    logger.d(value);
     return null;
   }
 

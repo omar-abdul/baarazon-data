@@ -23,7 +23,7 @@ class HttpService {
   }) async {
     try {
       final response = await _client.get(
-        Uri.parse('$API_URL$endpoint'),
+        Uri.parse('$apiUrl$endpoint'),
         headers: {
           'Content-Type': 'application/json',
           ...?headers,
@@ -52,7 +52,7 @@ class HttpService {
   }) async {
     try {
       final response = await _client.post(
-        Uri.parse('$API_URL$endpoint'),
+        Uri.parse('$apiUrl$endpoint'),
         headers: {
           'Content-Type': 'application/json',
           ...?headers,

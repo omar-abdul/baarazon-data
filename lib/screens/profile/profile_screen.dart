@@ -1,11 +1,11 @@
-import 'package:baarazon_data/constants.dart';
-import 'package:baarazon_data/screens/profile/cubit/cubit/phone_number_cubit.dart';
-import 'package:baarazon_data/cubits/regions/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants.dart';
+import '../../cubits/regions/cubit.dart';
 import '../../services/preferences_service.dart';
+import 'cubit/cubit/phone_number_cubit.dart';
+import '../../services/http_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -36,6 +36,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> setPhoneNumber(String phoneNumber) async {
+    await HttpService().post('/update-user-phone-number', body: {
+      'phone_number': phoneNumber,
+    });
     await PreferencesService.setPhoneNumber(phoneNumber);
   }
 

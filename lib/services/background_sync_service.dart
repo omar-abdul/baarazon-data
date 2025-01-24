@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:workmanager/workmanager.dart';
 import '../database/sqlite_db.dart';
@@ -12,13 +13,16 @@ void callbackDispatcher() {
       // Initialize services
 
       final localDb = SqliteDb();
-      await localDb.initializeDatabase();
+      await localDb.database;
 
       final syncService = SyncService(
         localDb: localDb,
       );
 
-      // Perform sync
+      final connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        return true;
+      }
       await syncService.syncAll();
 
       return true;

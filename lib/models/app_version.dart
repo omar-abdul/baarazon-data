@@ -3,7 +3,7 @@ class AppVersion {
   final String versionName;
   final bool forceUpdate;
   final DateTime releaseDate;
-  final AppStoreLinks appLinks;
+  final List<dynamic> appLinks;
 
   AppVersion({
     required this.versionCode,
@@ -19,7 +19,8 @@ class AppVersion {
       versionName: json['appVersion']['version_name'],
       forceUpdate: json['appVersion']['force_update'],
       releaseDate: DateTime.parse(json['appVersion']['release_date']),
-      appLinks: AppStoreLinks.fromJson(json['appLinks']),
+      appLinks:
+          json['appLinks'].map((link) => AppStoreLinks.fromJson(link)).toList(),
     );
   }
 }

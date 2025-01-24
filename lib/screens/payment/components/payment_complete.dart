@@ -1,14 +1,17 @@
 import 'package:baarazon_data/components/options_list_card.dart';
+import 'package:baarazon_data/components/phone_number.dart';
 import 'package:baarazon_data/logger.dart';
 import 'package:baarazon_data/screens/payment/cubit/payment_and_data_option_cubit.dart';
 import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../database/sqlite_db.dart';
 import '../../../models/models.dart';
 import '../../../models/payment.dart';
+import '../../../services/country_service.dart';
 import '../cubit/payment_cubit.dart';
 
 class PaymentComplete extends StatefulWidget {
@@ -28,12 +31,11 @@ class PaymentCompleteState extends State<PaymentComplete> {
   late FToast fToast;
   String? providerLogo;
   String? phoneNumber;
+  bool isLoading = false;
 
-  // static const Map<String, String> providerLogoMap = {
-  //   'amtel': 'assets/company_logo/amtel.png',
-  //   'somtel': 'assets/company_logo/Somtel.png',
-  //   'golis': 'assets/company_logo/Golis.png'
-  // };
+  String? senderNumber;
+  String? rechargeNumber;
+  CountryWithPhoneCode? country;
 
   @override
   void dispose() {
@@ -48,6 +50,14 @@ class PaymentCompleteState extends State<PaymentComplete> {
     fToast = FToast();
     fToast.init(context);
     _getProviderLogo();
+    _getCountry();
+  }
+
+  _getCountry() async {
+    final country = await CountryService().getSomaliaCountryCode();
+    setState(() {
+      this.country = country;
+    });
   }
 
   _getProviderLogo() async {
@@ -74,26 +84,48 @@ class PaymentCompleteState extends State<PaymentComplete> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(isError ? Icons.error : Icons.check),
-          SizedBox(
-            width: 12.0,
+          const SizedBox(width: 12.0),
+          Flexible(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+              softWrap: true,
+              overflow: TextOverflow.visible,
+            ),
           ),
-          Text(message),
         ],
       ),
     );
 
     fToast.showToast(
       child: toast,
-      gravity: ToastGravity.BOTTOM,
+      gravity: ToastGravity.CENTER,
       toastDuration: Duration(seconds: 4),
     );
   }
 
   _processPayment() {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      isLoading = true;
+    });
+
+    if (senderNumber == null || rechargeNumber == null) {
+      setState(() {
+        isLoading = false;
+      });
+      _showToast('Please enter both sender and  recharge numbers',
+          isError: true);
+      return;
+    }
+
     context.read<PaymentCubit>().processPayment(PaymentRequest(
-          payFrom: _phoneController1.text,
+          payFrom: senderNumber!,
           payProvider: widget.entry.key.name,
-          topupTo: _phoneController2.text,
+          topupTo: rechargeNumber!,
           providerId: widget.service.providerId,
           service: PaymentService(
             id: widget.service.id!,
@@ -102,26 +134,21 @@ class PaymentCompleteState extends State<PaymentComplete> {
         ));
 
     if (context.read<PaymentCubit>().state.status == PaymentStatus.success) {
+      setState(() {
+        isLoading = false;
+      });
       _showToast('Payment successful');
     }
     if (context.read<PaymentCubit>().state.status == PaymentStatus.failure) {
+      setState(() {
+        isLoading = false;
+      });
+
       _showToast('Payment failed', isError: true);
     }
   }
 
   // Basic phone number validation (can be extended)
-
-  String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Fadlan geli lambar';
-    }
-    if (value.length != 10) {
-      return 'Fadlan geli lambar dhamaystiran';
-    }
-
-    logger.d(value);
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,55 +187,71 @@ class PaymentCompleteState extends State<PaymentComplete> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // First phone number input
-                      TextFormField(
-                        controller: _phoneController1,
-                        decoration: InputDecoration(
-                            labelText: 'Enter Sender Number',
-                            border: const OutlineInputBorder(),
-                            prefixIcon: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: SizedBox(
-                                  width: 20,
-                                  child: Image.asset(
-                                    fromUrl,
-                                    fit: BoxFit.contain,
-                                  )),
-                            )),
-                        keyboardType: TextInputType.phone,
-                        validator: _validatePhoneNumber,
-                      ),
+
+                      country != null
+                          ? PhoneNumber(
+                              onPhoneNumberChanged: (value) {
+                                setState(() {
+                                  senderNumber = value;
+                                });
+                              },
+                              country: country!,
+                              controller: _phoneController1,
+                              labelText: 'Enter Sender Number',
+                              showHint: false,
+                              prefixIcon: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: SizedBox(
+                                    width: 20,
+                                    child: Image.asset(
+                                      fromUrl,
+                                      fit: BoxFit.contain,
+                                    )),
+                              ),
+                            )
+                          : CircularProgressIndicator(),
                       const SizedBox(height: 16.0),
                       // Second phone number input
-                      TextFormField(
-                        controller: _phoneController2,
-                        decoration: InputDecoration(
-                            labelText: 'Enter Recharge Number',
-                            border: const OutlineInputBorder(),
-                            prefixIcon: providerLogo != null
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    child: SizedBox(
-                                        width: 20,
-                                        child: Image.asset(
-                                          toUrl!,
-                                          fit: BoxFit.contain,
-                                        )),
-                                  )
-                                : null),
-                        keyboardType: TextInputType.phone,
-                        validator: _validatePhoneNumber,
-                      ),
+
+                      country != null
+                          ? PhoneNumber(
+                              onPhoneNumberChanged: (value) {
+                                setState(() {
+                                  rechargeNumber = value;
+                                });
+                              },
+                              country: country!,
+                              controller: _phoneController2,
+                              labelText: 'Enter Recharge Number',
+                              showHint: false,
+                              prefixIcon: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: SizedBox(
+                                    width: 20,
+                                    child: Image.asset(
+                                      toUrl!,
+                                      fit: BoxFit.contain,
+                                    )),
+                              ),
+                            )
+                          : const CircularProgressIndicator(),
                       const SizedBox(height: 20.0),
                       // Submit Button
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton(
-                              onPressed: _processPayment,
-                              child: const Text('Pay'),
-                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 50,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ))
+                                : FilledButton(
+                                    onPressed: _processPayment,
+                                    child: const Text('Pay'),
+                                  ),
                           ),
                         ],
                       ),

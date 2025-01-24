@@ -7,6 +7,7 @@ import '../../components/phone_number.dart';
 import '../../cubits/auth/auth_cubit.dart';
 import '../../logger.dart';
 import '../../route/screen_exports.dart';
+import '../../services/country_service.dart';
 import '../../services/preferences_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -39,8 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _initializeCountry() async {
-    final regions = await getAllSupportedRegions();
-    final region = regions['SO']!;
+    final region = await CountryService().getSomaliaCountryCode();
     setState(() {
       _country = region;
     });

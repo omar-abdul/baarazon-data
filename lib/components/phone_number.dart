@@ -14,18 +14,23 @@ final textHintMap = {
 };
 
 class PhoneNumber extends StatefulWidget {
-  final Function(Map<String, dynamic>) onPhoneNumberChanged;
+  final Function(String?) onPhoneNumberChanged;
   final CountryWithPhoneCode country;
   final TextEditingController controller;
   final String? initialValue;
+  final String? labelText;
+  final bool? showHint;
+  final Widget? prefixIcon;
 
-  const PhoneNumber({
-    super.key,
-    required this.onPhoneNumberChanged,
-    required this.country,
-    required this.controller,
-    this.initialValue,
-  });
+  const PhoneNumber(
+      {super.key,
+      required this.onPhoneNumberChanged,
+      required this.country,
+      required this.controller,
+      this.initialValue,
+      this.labelText,
+      this.showHint = true,
+      this.prefixIcon});
 
   @override
   State<PhoneNumber> createState() => _PhoneNumberState();
@@ -49,8 +54,9 @@ class _PhoneNumberState extends State<PhoneNumber> {
         TextField(
           controller: widget.controller,
           decoration: InputDecoration(
-            labelText: 'Phone Number',
-            hintText: hintText,
+            labelText: widget.labelText ?? 'Phone Number',
+            hintText: widget.showHint! ? hintText : '',
+            prefixIcon: widget.prefixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -72,6 +78,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
               widget.onPhoneNumberChanged(parsed['e164']);
             } catch (e) {
               setState(() => _hasError = true);
+              widget.onPhoneNumberChanged(null);
             }
           },
         ),

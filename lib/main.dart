@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'cubits/regions/cubit.dart';
@@ -38,7 +39,7 @@ void main() async {
     await SeedLocalDb().seedAll();
     await PreferencesService.setFirstLaunch(false);
   }
-
+  await init();
   runApp(MyApp(isFirstLaunch: isFirstLaunch));
 }
 

@@ -8,6 +8,7 @@ enum AuthStatus {
   initial,
   loading,
   authenticated,
+  otpSent,
   error,
 }
 
@@ -58,17 +59,34 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       logger.d('loginWithPhone: $phoneNumber');
       emit(state.copyWith(status: AuthStatus.loading));
-      final token = await _authService.login(phoneNumber);
-      emit(state.copyWith(
-        token: token,
-        status: AuthStatus.authenticated,
-        error: null,
-      ));
+      final response = await _authService.login(phoneNumber);
+      if (response == null) {
+        emit(state.copyWith(status: AuthStatus.otpSent, error: null));
+      } else {
+        emit(state.copyWith(
+            status: AuthStatus.error,
+            error: "There was an error sending the OTP"));
+      }
     } catch (e) {
       emit(state.copyWith(
         status: AuthStatus.error,
         error: e.toString(),
       ));
+    }
+  }
+
+  void verifyOtp(String otp) async {
+    try {
+      final response = await _authService.verifyOtp(otp);
+      if (response["token"] != null) {
+        emit(state.copyWith(
+            status: AuthStatus.authenticated, token: response["token"]));
+      } else {
+        emit(
+            state.copyWith(status: AuthStatus.error, error: response["error"]));
+      }
+    } catch (e) {
+      emit(state.copyWith(status: AuthStatus.error, error: e.toString()));
     }
   }
 

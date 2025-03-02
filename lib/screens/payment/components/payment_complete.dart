@@ -1,6 +1,5 @@
 import 'package:baarazon_data/components/options_list_card.dart';
 import 'package:baarazon_data/components/phone_number.dart';
-import 'package:baarazon_data/logger.dart';
 import 'package:baarazon_data/screens/payment/cubit/payment_and_data_option_cubit.dart';
 import 'package:baarazon_data/screens/payment/components/payment_select.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import '../../../database/sqlite_db.dart';
 import '../../../models/models.dart';
 import '../../../models/payment.dart';
 import '../../../services/country_service.dart';
+import '../../thank_you/thank_you_screen.dart';
 import '../cubit/payment_cubit.dart';
 
 class PaymentComplete extends StatefulWidget {
@@ -137,7 +137,8 @@ class PaymentCompleteState extends State<PaymentComplete> {
       setState(() {
         isLoading = false;
       });
-      _showToast('Payment successful');
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const ThankYouScreen()));
     }
     if (context.read<PaymentCubit>().state.status == PaymentStatus.failure) {
       setState(() {
@@ -148,7 +149,7 @@ class PaymentCompleteState extends State<PaymentComplete> {
     }
   }
 
-  // Basic phone number validation (can be extended)
+
 
   @override
   Widget build(BuildContext context) {

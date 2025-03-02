@@ -23,7 +23,7 @@ class PaymentBottomSheet extends StatelessWidget {
       child: BlocBuilder<PaymentAndDataOptionCubit, PaymentAndDataOptionState>(
         builder: (context, state) {
           final List<Widget> paymentPages = [
-            PaymentScreen(
+            PaymentSelectionScreen(
               service: service,
               onSelectPayment: (entry, context) {
                 context
@@ -31,7 +31,7 @@ class PaymentBottomSheet extends StatelessWidget {
                     .onSelectPayment(entry);
               },
             ),
-            if (state is NewPaymentAndDataState)
+            if (state is SelectedPaymentAndDataOption)
               PaymentComplete(
                 service: service,
                 entry: state.paymentOption!,

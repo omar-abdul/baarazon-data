@@ -21,6 +21,7 @@ class PhoneNumber extends StatefulWidget {
   final String? labelText;
   final bool? showHint;
   final Widget? prefixIcon;
+  final bool? enabled;
 
   const PhoneNumber(
       {super.key,
@@ -30,7 +31,8 @@ class PhoneNumber extends StatefulWidget {
       this.initialValue,
       this.labelText,
       this.showHint = true,
-      this.prefixIcon});
+      this.prefixIcon,
+      this.enabled = true});
 
   @override
   State<PhoneNumber> createState() => _PhoneNumberState();
@@ -52,6 +54,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
+          enabled: widget.enabled,
           controller: widget.controller,
           decoration: InputDecoration(
             labelText: widget.labelText ?? 'Phone Number',

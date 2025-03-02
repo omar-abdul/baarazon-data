@@ -5,8 +5,8 @@ import '../../../cubits/regions/cubit.dart';
 import '../../../models/payment_options/payment_options.dart';
 import '../../../models/services.dart';
 
-class PaymentScreen extends StatelessWidget {
-  const PaymentScreen({
+class PaymentSelectionScreen extends StatelessWidget {
+  const PaymentSelectionScreen({
     super.key,
     required this.service,
     required this.onSelectPayment,

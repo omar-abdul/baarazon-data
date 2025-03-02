@@ -10,14 +10,14 @@ class PaymentAndDataOptionCubit extends Cubit<PaymentAndDataOptionState> {
   PaymentAndDataOptionCubit() : super(const PaymentAndDataOptionInitial());
 
   void onSelectPayment(MapEntry<PaymentOptions, PaymentOption> entry) {
-    emit(NewPaymentAndDataState(
+    emit(SelectedPaymentAndDataOption(
       currentIndex: 1,
       paymentOption: entry,
     ));
   }
 
   void changePayment() {
-    emit(NewPaymentAndDataState(
+    emit(ChangePaymentAndDataOption(
       currentIndex: 0,
       paymentOption: state.paymentOption!,
     ));

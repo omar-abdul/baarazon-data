@@ -38,13 +38,18 @@ class _EntryPointState extends State<EntryPoint> {
   void initState() {
     super.initState();
     _checkVersion();
-    // Check version every 24 hours
+
     _versionCheckTimer = Timer.periodic(const Duration(hours: 1), (_) {
       _checkVersion();
     });
   }
 
   Future<void> _checkVersion() async {
+    if (context.read<ConnectivityCubit>().state ==
+        ConnectionStatus.disconnected) {
+      return;
+    }
+
     final versionCheck = await _appVersionService.checkVersion();
     logger.d('CHECK VERSION TIMER : ${versionCheck.needsUpdate}');
     if (versionCheck.needsUpdate && mounted) {
@@ -157,28 +162,32 @@ class _EntryPointState extends State<EntryPoint> {
             ),
             actions: const [],
           ),
-          body: PageTransitionSwitcher(
-            duration: defaultDuration,
-            child: _pages[_currentIndex],
-            transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-              return FadeThroughTransition(
-                animation: primaryAnimation,
-                secondaryAnimation: secondaryAnimation,
-                child: child,
-              );
-            },
-          ),
-
-          bottomNavigationBar: CustomBtmNavigation(
-            onItemSelected: (index) {
-              if (_currentIndex != index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              }
-            },
-            selectedIndex: _currentIndex,
-          ),
+          body: state == ConnectionStatus.connected
+              ? PageTransitionSwitcher(
+                  duration: defaultDuration,
+                  child: _pages[_currentIndex],
+                  transitionBuilder:
+                      (child, primaryAnimation, secondaryAnimation) {
+                    return FadeThroughTransition(
+                      animation: primaryAnimation,
+                      secondaryAnimation: secondaryAnimation,
+                      child: child,
+                    );
+                  },
+                )
+              : const ProvidersList(),
+          bottomNavigationBar: state == ConnectionStatus.connected
+              ? CustomBtmNavigation(
+                  onItemSelected: (index) {
+                    if (_currentIndex != index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    }
+                  },
+                  selectedIndex: _currentIndex,
+                )
+              : const SizedBox(),
           // body: const HomeScreen(),
           // floatingActionButton: FloatingActionButton.large(
           //   shape: const CircleBorder(side: BorderSide.none),

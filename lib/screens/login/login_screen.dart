@@ -101,6 +101,15 @@ class _LoginPageState extends State<LoginPage> {
             loading = false;
           });
         }
+
+        if (state.status == AuthStatus.otpSent) {
+          _showToast('OTP sent to your phone number', false);
+          Navigator.of(context).pushNamed(otpVerificationRoute);
+
+          setState(() {
+            loading = false;
+          });
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

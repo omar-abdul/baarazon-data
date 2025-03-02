@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:baarazon_data/services/preferences_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -72,6 +73,9 @@ class FirebaseService {
   }
 
   Future<void> _saveTokenToServer(String? fcmToken) async {
+    var hasConnected = await Connectivity().checkConnectivity();
+    if (hasConnected.contains(ConnectivityResult.none)) return;
+
     if (fcmToken == null) return;
 
     final authToken = await PreferencesService.getToken();

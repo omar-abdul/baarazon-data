@@ -16,9 +16,16 @@ final class PaymentAndDataOptionInitial extends PaymentAndDataOptionState {
       : super(currentIndex: 0, paymentOption: null);
 }
 
-final class NewPaymentAndDataState extends PaymentAndDataOptionState {
-  const NewPaymentAndDataState({
+final class SelectedPaymentAndDataOption extends PaymentAndDataOptionState {
+  const SelectedPaymentAndDataOption({
     required super.currentIndex,
+    required MapEntry<PaymentOptions, PaymentOption> super.paymentOption,
+  });
+}
+
+final class ChangePaymentAndDataOption extends PaymentAndDataOptionState {
+  const ChangePaymentAndDataOption({
+    super.currentIndex = 0,
     required MapEntry<PaymentOptions, PaymentOption> super.paymentOption,
   });
 }

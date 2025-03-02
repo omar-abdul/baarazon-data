@@ -43,7 +43,7 @@ class AppVersionService {
       if (_shouldCheck()) {
         _cachedVersion = await getAppVersion();
         _lastCheck = DateTime.now();
-        logger.d('CHECK VERSION SHOULD CHECK ${_lastCheck}');
+        logger.d('CHECK VERSION SHOULD CHECK $_lastCheck');
       }
 
       if (_cachedVersion == null) return AppVersionCheck(needsUpdate: false);

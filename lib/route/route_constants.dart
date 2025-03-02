@@ -11,3 +11,6 @@ const String profileScreenRoute = 'profile';
 const String inputNumberScreenRoute = 'inputNumber';
 const String loginScreenRoute = 'login';
 const String onBoardingScreenRoute = 'onboarding';
+const String otpVerificationRoute = 'otpVerification';
+
+const String noInternetServicesRoute = 'nointernet';

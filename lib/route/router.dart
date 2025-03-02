@@ -1,5 +1,7 @@
 import 'package:baarazon_data/screens/login/login_screen.dart';
+import 'package:baarazon_data/screens/no_internet_payment/no_internet_payment_screen.dart';
 import 'package:baarazon_data/screens/onboarding/onboarding_screen.dart';
+import 'package:baarazon_data/screens/otp/otp_verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'screen_exports.dart';
 
@@ -25,11 +27,19 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const LoginPage());
     case onBoardingScreenRoute:
       return MaterialPageRoute(builder: (context) => const OnBoardingScreen());
+    case otpVerificationRoute:
+      return MaterialPageRoute(
+          builder: (context) => const OtpVerificationScreen());
     case servicesAndPlansScreenRoute:
       final args = settings.arguments as Map<String, dynamic>;
       return MaterialPageRoute(
           builder: (context) =>
               ServicesAndPlanScreen(provider: args['provider']));
+    case noInternetServicesRoute:
+      final args = settings.arguments as Map<String, dynamic>;
+      return MaterialPageRoute(
+          builder: (context) =>
+              NoInternetPaymentScreen(service: args['service']));
 
     default:
       return MaterialPageRoute(builder: (context) => const HomeScreen());

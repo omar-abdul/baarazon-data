@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 
 import '../../constants.dart';
 import '../../cubits/regions/cubit.dart';
+import '../../services/country_service.dart';
 import '../../services/preferences_service.dart';
-import 'cubit/cubit/phone_number_cubit.dart';
+
 import '../../services/http_service.dart';
+import '../../components/phone_number.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,7 +19,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditing = false;
-  bool _isValidNumber = true;
+  CountryWithPhoneCode? country;
+  String? phoneNumber;
 
   final TextEditingController _numberController = TextEditingController();
 
@@ -33,13 +37,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (phoneNumber != null) {
       _numberController.text = phoneNumber;
     }
+    final country = await CountryService().getSomaliaCountryCode();
+    setState(() {
+      this.country = country;
+    });
   }
 
   Future<void> setPhoneNumber(String phoneNumber) async {
-    await HttpService().post('/update-user-phone-number', body: {
-      'phone_number': phoneNumber,
-    });
-    await PreferencesService.setPhoneNumber(phoneNumber);
+    try {
+      await HttpService().post('/update-user-phone-number', body: {
+        'phone_number': phoneNumber,
+      });
+      await PreferencesService.setPhoneNumber(phoneNumber);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update phone number')),
+      );
+    }
   }
 
   @override
@@ -55,16 +69,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveProfile() {
-    if (!_isValidNumber) {
-      // Show an error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid number')),
-      );
-      return;
-    }
+    // if (!_isValidNumber) {
+    //   // Show an error message
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Please enter a valid number')),
+    //   );
+    //   return;
+    // }
 
     // Save the updated profile information
     // Implement your save logic here
+
+    setPhoneNumber(phoneNumber!);
 
     setState(() {
       isEditing = false;
@@ -138,29 +154,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       // Number Field
-                      TextField(
+                      // TextField(
+                      //   controller: _numberController,
+                      //   enabled: isEditing,
+                      //   keyboardType: TextInputType.phone,
+                      //   decoration: InputDecoration(
+                      //     labelText: 'Number',
+                      //     border: const OutlineInputBorder(),
+                      //     errorText:
+                      //         _isValidNumber ? null : 'Enter a valid number',
+                      //   ),
+                      //   onChanged: (value) async {
+                      //     final phoneNumber = context.read<PhoneNumberCubit>();
+                      //     setState(() {
+                      //       _isValidNumber = validatePhoneNumber(value);
+                      //     });
+
+                      //     if (_isValidNumber) {
+                      //       await setPhoneNumber(value);
+                      //       phoneNumber
+                      //           .changePhoneNumber(_numberController.text);
+                      //     }
+                      //   },
+                      // ),
+                      PhoneNumber(
+                        onPhoneNumberChanged: (val) {
+                          setState(() {
+                            phoneNumber = val;
+                          });
+                        },
+                        country: country!,
                         controller: _numberController,
                         enabled: isEditing,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          labelText: 'Number',
-                          border: const OutlineInputBorder(),
-                          errorText:
-                              _isValidNumber ? null : 'Enter a valid number',
-                        ),
-                        onChanged: (value) async {
-                          final phoneNumber = context.read<PhoneNumberCubit>();
-                          setState(() {
-                            _isValidNumber = validatePhoneNumber(value);
-                          });
-
-                          if (_isValidNumber) {
-                            await setPhoneNumber(value);
-                            phoneNumber
-                                .changePhoneNumber(_numberController.text);
-                          }
-                        },
                       ),
+                      isEditing
+                          ? IconButton(
+                              onPressed: () {
+                                setPhoneNumber(phoneNumber!);
+                              },
+                              icon: const Icon(Icons.save))
+                          : const SizedBox(),
+
                       const SizedBox(height: 16.0),
                       // Location Dropdown
                       InputDecorator(

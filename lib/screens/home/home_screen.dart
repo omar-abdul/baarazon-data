@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../services/background_sync_service.dart';
 import '../../services/firebase_messaging_service.dart';
+import '../../services/preferences_service.dart';
 import '../internet_providers/internet_providers_list.dart';
 import 'components/offers_carousel.dart';
 import 'orders/orders.dart';
@@ -29,8 +30,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _initBgServiesAndFirebase() async {
-    await BackgroundSyncService.initialize();
-    await BackgroundSyncService.registerPeriodicSync();
+    // await BackgroundSyncService.initialize();
+    // await BackgroundSyncService.registerPeriodicSync();
+    final token = await PreferencesService.getToken();
+    print(token);
     final firebaseService = FirebaseService();
     await firebaseService.initialize();
   }

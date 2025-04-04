@@ -75,7 +75,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void verifyOtp(String otp) async {
+  Future<void> verifyOtp(String otp) async {
     try {
       final response = await _authService.verifyOtp(otp);
       if (response["token"] != null) {

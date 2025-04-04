@@ -16,11 +16,11 @@ class AuthService {
       acceptedCodes: {200, 409},
     );
 
+    await PreferencesService.setPhoneNumber(phoneNumber);
     final error = response['error'];
     if (error != null) {
       return error;
     }
-    await PreferencesService.setPhoneNumber(phoneNumber);
     return null;
   }
 
@@ -38,10 +38,11 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> verifyOtp(String otp) async {
+    final phoneNumber = await PreferencesService.getPhoneNumber();
     final response =
         await _http.post<Map<String, dynamic>, Map<String, dynamic>>(
       '/verify-otp',
-      body: {'otp': otp},
+      body: {'otp': otp, 'phone_number': phoneNumber},
       acceptedCodes: {200},
     );
     final token = response['token'];
@@ -61,5 +62,11 @@ class AuthService {
     final token = await PreferencesService.getToken();
     if (token == null) return false;
     return verifyToken(token);
+  }
+
+  Future<void> resendOtp() async {
+    final phoneNumber = await PreferencesService.getPhoneNumber();
+    if (phoneNumber == null) return;
+    await login(phoneNumber);
   }
 }

@@ -21,6 +21,8 @@ void main() async {
   // Initial check at startup
   final appVersionService = AppVersionService();
   final versionCheck = await appVersionService.checkVersion();
+  final token = await PreferencesService.getToken();
+  print(token);
 
   if (versionCheck.needsUpdate && versionCheck.forceUpdate) {
     runApp(MaterialApp(
